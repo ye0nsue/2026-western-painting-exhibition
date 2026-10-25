@@ -398,7 +398,13 @@ export default function Splash({ children }: { children: ReactNode }) {
       }
       transition(x, y);
     }
-    function onReplayClick(e: MouseEvent) {
+    function onTitleClick(e: MouseEvent) {
+      e.stopPropagation();
+      start();
+    }
+    function onTitleKeydown(e: KeyboardEvent) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
       e.stopPropagation();
       start();
     }
@@ -410,7 +416,8 @@ export default function Splash({ children }: { children: ReactNode }) {
     }
 
     stage.addEventListener("click", onStageClick);
-    $<HTMLButtonElement>("#replay").addEventListener("click", onReplayClick);
+    title.addEventListener("click", onTitleClick);
+    title.addEventListener("keydown", onTitleKeydown);
     window.addEventListener("resize", onResize);
 
     let started = false;
@@ -429,7 +436,8 @@ export default function Splash({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       cancelAnimationFrame(tRaf);
       stage.removeEventListener("click", onStageClick);
-      $<HTMLButtonElement>("#replay").removeEventListener("click", onReplayClick);
+      title.removeEventListener("click", onTitleClick);
+      title.removeEventListener("keydown", onTitleKeydown);
       window.removeEventListener("resize", onResize);
     };
   }, []);
@@ -448,10 +456,12 @@ export default function Splash({ children }: { children: ReactNode }) {
   --band: #f33423;
   --display: var(--font-splash-inter), 'Helvetica Neue', Arial, sans-serif;
   --body: var(--font-splash-inter), var(--font-splash-noto-kr), 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --fpsplash-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --k: 0.72;
   color-scheme: light;
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
   height: 100dvh;
   margin: 0;
   background: var(--paper);
@@ -465,7 +475,7 @@ export default function Splash({ children }: { children: ReactNode }) {
 .fpsplash .trans { position: absolute; inset: 0; z-index: 15; width: 100%; height: 100%; display: none; pointer-events: none; }
 /* Once the reveal finishes, stop clamping to one viewport-height overlay
    so the real page content underneath can lay out and scroll normally. */
-.fpsplash.entered { height: auto; overflow: visible; }
+.fpsplash.entered { position: static; inset: auto; z-index: auto; height: auto; overflow: visible; }
 .fpsplash.entered .main { position: static; overflow: visible; }
 
 .fpsplash .stage { position: absolute; inset: 0; background: var(--paper); overflow: hidden; cursor: pointer; transition: transform 0.9s cubic-bezier(0.7, 0, 0.2, 1); }
@@ -496,11 +506,12 @@ export default function Splash({ children }: { children: ReactNode }) {
 .fpsplash .photo { opacity: 1; }
 .fpsplash .go .photo { animation: fpsplash-fade 1.5s ease-out 7.4s both; }
 
-.fpsplash .title { position: absolute; margin: 0; pointer-events: none; line-height: 0; }
-.fpsplash .title svg { display: block; width: 100%; height: auto; overflow: hidden; }
+.fpsplash .title { position: absolute; margin: 0; line-height: 0; cursor: pointer; }
+.fpsplash .title svg { display: block; width: 100%; height: auto; overflow: hidden; pointer-events: none; }
 .fpsplash .title path { fill: var(--ink); fill-rule: evenodd; }
+.fpsplash .title:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
 @keyframes fpsplash-upsvg { from { transform: translateY(200px); } to { transform: translateY(0); } }
-.fpsplash .go .title path { animation: fpsplash-upsvg 0.8s var(--ease-out) var(--d, 0s) both; }
+.fpsplash .go .title path { animation: fpsplash-upsvg 0.8s var(--fpsplash-ease-out) var(--d, 0s) both; }
 
 .fpsplash .legend { position: absolute; left: calc(70px * var(--k)); bottom: calc(48px * var(--k)); margin: 0; color: var(--legend); font-size: max(12px, calc(21px * var(--k))); font-weight: 500; letter-spacing: -0.04em; line-height: 1.78; pointer-events: none; }
 .fpsplash .legend p { margin: 0; display: flex; align-items: center; }
@@ -525,10 +536,7 @@ export default function Splash({ children }: { children: ReactNode }) {
 .fpsplash .go .enter { animation: fpsplash-rise 0.7s ease-out 8.1s both; }
 .fpsplash .go .enter span { animation: fpsplash-pulse 1.8s ease-in-out 8.9s infinite; }
 @keyframes fpsplash-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.fpsplash .enter:focus-visible, .fpsplash .replay:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-
-.fpsplash .replay { position: absolute; z-index: 20; top: calc(max(10px, env(safe-area-inset-top, 0px)) + 4px); right: max(16px, env(safe-area-inset-right, 0px)); appearance: none; border: 1px solid rgba(27, 25, 26, 0.25); background: rgba(255, 255, 255, 0.92); color: var(--ink); font: 500 12px/1 var(--body); padding: 8px 12px; border-radius: 0; cursor: pointer; }
-.fpsplash .replay:hover { background: var(--ink); color: #fff; }
+.fpsplash .enter:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 .fpsplash .stage.compact .legend { left: max(16px, env(safe-area-inset-left, 0px)); bottom: 4vh; font-size: 13px; }
 .fpsplash .stage.compact .enter { right: 12px; bottom: 4vh; }
@@ -542,9 +550,6 @@ export default function Splash({ children }: { children: ReactNode }) {
       `}</style>
 
       <canvas className="trans" id="trans" aria-hidden="true" />
-      <button className="replay" id="replay" type="button">
-        ↻ 다시 보기
-      </button>
 
       <div className="stage" id="stage" role="presentation">
         <canvas className="layer" id="dots" aria-hidden="true" />
@@ -557,7 +562,7 @@ export default function Splash({ children }: { children: ReactNode }) {
           <g id="bldG" />
         </svg>
 
-        <h1 className="title" id="title" aria-label="Flux Point" />
+        <h1 className="title" id="title" role="button" tabIndex={0} aria-label="Flux Point — 다시 보기" />
         <div className="legend" id="legend">
           <p className="h" style={d("3.60s")}>
             Exhibition Hall

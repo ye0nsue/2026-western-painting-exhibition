@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Background collage photo. Swap this single file to change the hero's
@@ -12,60 +11,76 @@ import { useState } from "react";
  */
 const BG_MAP_SRC = "/images/main/bg-map.png";
 
-const LOGO_SRC = "/images/main/logo-wordmark.svg";
 const POSTER_GAON_SRC = "/images/main/poster-gaon-gallery.svg";
 const POSTER_S101_SRC = "/images/main/poster-s101.svg";
 const POSTER_PAIROOM_SRC = "/images/main/poster-pairoom.svg";
-const SEARCH_UNDERLINE_SRC = "/images/main/vector-1.svg";
+const PAIROOM_PREVIEW_SRC = "/images/main/pairoom-preview.png";
+const PAIROOM_DETAIL_PREVIEW_SRC = "/images/main/pairoom-detail-preview.png";
+const PAIROOM_DETAIL_DELAY_MS = 1000;
 
-function SearchControl() {
-  const [isOpen, setIsOpen] = useState(false);
+type PairoomHoverStage = "idle" | "preview" | "detail";
 
-  if (!isOpen) {
-    return (
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="absolute top-[20.31%] left-[81.51%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a] hover:opacity-60"
-      >
-        Search
-      </button>
-    );
-  }
-
+function PairoomHoverPreview({ stage }: { stage: PairoomHoverStage }) {
   return (
-    <form
-      onSubmit={(event) => event.preventDefault()}
-      className="absolute top-[20.31%] left-[81.51%] flex items-center"
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute inset-0 z-20 overflow-hidden bg-white transition-opacity duration-[900ms] ease-out ${
+        stage === "idle" ? "opacity-0" : "opacity-100"
+      }`}
     >
-      <label className="relative">
-        <span className="sr-only">검색어 입력</span>
-        <input
-          autoFocus
-          type="search"
-          onBlur={() => setIsOpen(false)}
-          className="w-[12.5vw] bg-transparent text-[1.111vw] font-medium text-[#e23f28] outline-none"
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute left-0 top-[1.944vw] block h-px w-[12.5vw]"
-          src={SEARCH_UNDERLINE_SRC}
-        />
-      </label>
-    </form>
+      {/*
+        These screenshots are of the full 1440x885 Figma frames, header
+        included — but the live header now renders once, globally, above
+        this hero. Oversize + shift up by the header's share (64/885) so the
+        baked-in header crops off above the hero's top edge instead of
+        doubling up with the real one.
+      */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt=""
+        className={`absolute left-0 top-[-7.80%] h-[107.80%] w-full object-cover transition-opacity duration-300 ${
+          stage === "detail" ? "opacity-0" : "opacity-100"
+        }`}
+        src={PAIROOM_PREVIEW_SRC}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt=""
+        className={`absolute left-0 top-[-7.80%] h-[107.80%] w-full object-cover object-top transition-opacity duration-300 ${
+          stage === "detail" ? "opacity-100" : "opacity-0"
+        }`}
+        src={PAIROOM_DETAIL_PREVIEW_SRC}
+      />
+    </div>
   );
 }
 
 export default function MainHero() {
+  const [pairoomStage, setPairoomStage] = useState<PairoomHoverStage>("idle");
+  const pairoomTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pairoomTimerRef.current) clearTimeout(pairoomTimerRef.current);
+    };
+  }, []);
+
+  function handlePairoomEnter() {
+    setPairoomStage("preview");
+    pairoomTimerRef.current = setTimeout(() => setPairoomStage("detail"), PAIROOM_DETAIL_DELAY_MS);
+  }
+  function handlePairoomLeave() {
+    if (pairoomTimerRef.current) clearTimeout(pairoomTimerRef.current);
+    setPairoomStage("idle");
+  }
+
   return (
     <section
       aria-label="Flux Point 메인 비주얼"
-      className="relative aspect-[1440/955] w-full overflow-hidden bg-white"
+      className="relative aspect-[1440/821] w-full overflow-hidden bg-white"
     >
       {/* 배경이미지 */}
-      <div className="absolute left-[-0.17%] top-[1.70%] h-[97.59%] w-[48.68%] overflow-hidden">
+      <div className="absolute left-[-0.17%] top-[-5.82%] h-[113.51%] w-[48.68%] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
@@ -74,7 +89,7 @@ export default function MainHero() {
           src={BG_MAP_SRC}
         />
       </div>
-      <div className="absolute left-[50.86%] top-[1.36%] h-[98.58%] w-[49.81%] overflow-hidden">
+      <div className="absolute left-[50.86%] top-[-6.21%] h-[114.67%] w-[49.81%] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
@@ -83,7 +98,7 @@ export default function MainHero() {
           src={BG_MAP_SRC}
         />
       </div>
-      <div className="absolute left-[48.52%] top-[1.70%] h-[97.59%] w-[2.34%] overflow-hidden">
+      <div className="absolute left-[48.52%] top-[-5.82%] h-[113.51%] w-[2.34%] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
@@ -92,53 +107,34 @@ export default function MainHero() {
           src={BG_MAP_SRC}
         />
       </div>
-      <div className="absolute left-[48.99%] top-[13.39%] h-[38.97%] w-[1.52%] bg-[#fff1e4]" />
-      <div className="absolute left-[48.05%] top-[0.03%] h-[10.81%] w-[3.43%] bg-white" />
-      <div className="absolute left-0 top-[-0.07%] h-[2.52%] w-full bg-white" />
+      <div className="absolute left-[48.99%] top-[7.79%] h-[45.33%] w-[1.52%] bg-[#fff1e4]" />
+      <div className="absolute left-[48.05%] top-[-7.76%] h-[12.58%] w-[3.43%] bg-white" />
+      <div className="absolute left-0 top-[-7.87%] h-[2.93%] w-full bg-white" />
 
       {/* 가온갤러리 */}
-      <div className="absolute left-[65.02%] top-[43.31%] h-[33.19%] w-[15.44%]">
+      <div className="absolute left-[65.02%] top-[42.58%] h-[38.61%] w-[15.44%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="" className="block h-full w-full" src={POSTER_GAON_SRC} />
       </div>
 
       {/* S101 */}
-      <div className="absolute left-[48.56%] top-[14.13%] h-[26.73%] w-[15.40%]">
+      <div className="absolute left-[48.56%] top-[8.65%] h-[31.09%] w-[15.40%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="" className="block h-full w-full" src={POSTER_S101_SRC} />
       </div>
 
       {/* 파이룸 */}
-      <div className="absolute left-[22.71%] top-[32.96%] h-[45.86%] w-[10.40%] rotate-[-18.46deg]">
+      <div
+        className="absolute left-[22.71%] top-[30.55%] h-[53.34%] w-[10.40%] rotate-[-18.46deg] cursor-pointer"
+        onMouseEnter={handlePairoomEnter}
+        onMouseLeave={handlePairoomLeave}
+      >
         <div className="flex h-full w-full items-center justify-center p-[1.06vw]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="" className="block h-full w-full" src={POSTER_PAIROOM_SRC} />
+          <img alt="파이룸" className="block h-full w-full" src={POSTER_PAIROOM_SRC} />
         </div>
       </div>
-
-      {/* Header */}
-      <div className="absolute left-0 top-0 h-[6.70%] w-full overflow-hidden">
-        <Link
-          href="/"
-          className="absolute left-[12.05%] top-1/2 h-[30.48%] w-[8.19%] -translate-y-1/2"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="Flux Point" className="block h-full w-full" src={LOGO_SRC} />
-        </Link>
-        <Link
-          href="/about"
-          className="absolute left-[47.81%] top-[20.61%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a] hover:opacity-60"
-        >
-          About
-        </Link>
-        <span className="absolute left-[58.65%] top-[20.61%] cursor-default whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a]">
-          Student
-        </span>
-        <span className="absolute left-[68.79%] top-[20.61%] cursor-default whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a]">
-          Open Studio
-        </span>
-        <SearchControl />
-      </div>
+      <PairoomHoverPreview stage={pairoomStage} />
     </section>
   );
 }
