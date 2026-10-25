@@ -1,8 +1,17 @@
 export const exhibitionInfo = {
   title: "2026 서양화과 졸업전시",
-  period: "2026.00.00 - 2026.00.00",
-  location: "전시 장소 입력",
+  period: "2026.12.01 - 2026.12.06",
+  location: "성신여자대학교 돈암수정캠퍼스",
   hours: "00:00 - 00:00",
+  venues: [
+    { label: "조형 1관 S101" },
+    { label: "난향관 4F 파이룸" },
+    { label: "수정관 1F 가온갤러리" },
+  ],
+  openStudio: {
+    label: "Open Studio",
+    location: "조형 1관 6층 601호·606호",
+  },
 };
 
 export type Artist = {
