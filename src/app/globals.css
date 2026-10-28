@@ -25,6 +25,16 @@ html::-webkit-scrollbar {
   display: none;
 }
 
+/* Home: the hero's map runs straight into the footer. When the window is
+   taller than hero + footer, the leftover height goes to the red footer
+   instead of opening a white gap between the map and the footer. */
+main:has([data-home-hero]) {
+  flex-grow: 0;
+}
+main:has([data-home-hero]) + footer {
+  flex-grow: 1;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

@@ -33,54 +33,57 @@ const LINK_CLASS = "hover:opacity-70";
 /**
  * Site-wide footer from the Figma "footer" component (1440x200). Like the
  * header, it scales with the viewport so its absolute layout holds at any
- * width.
+ * width. The red <footer> itself can grow taller than that box (see the
+ * home-page rule in globals.css); the content stays at the top.
  */
 export default function Footer() {
   return (
     <footer
-      className={`${inter.variable} ${notoSansKr.variable} relative mt-auto aspect-[1440/200] w-full overflow-hidden bg-final-red font-[family-name:var(--font-footer-inter),var(--font-footer-noto-kr)] leading-normal font-medium text-white`}
+      className={`${inter.variable} ${notoSansKr.variable} mt-auto w-full bg-final-red font-[family-name:var(--font-footer-inter),var(--font-footer-noto-kr)] leading-normal font-medium text-white`}
     >
-      <p className="absolute left-[11.6%] top-[10%] whitespace-pre text-[1.006vw] font-semibold">
-        {"성신여자대학교 가온갤러리 | 파이룸 |  S101"}
-      </p>
-      <a
-        href={MAP_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`absolute left-[11.6%] top-[26.5%] whitespace-nowrap text-[0.838vw] ${LINK_CLASS}`}
-      >
-        서울특별시 성북구 보문로34다길 2 / 수정관 1F | 난향관 4F | 조형 1관 1F
-      </a>
-      <p className="absolute left-[11.6%] top-[39%] whitespace-nowrap text-[0.838vw]">
-        서양화과 과사무실.{" "}
-        <a href={OFFICE_TEL_HREF} className={LINK_CLASS}>
-          02-920-7539
+      <div className="relative aspect-[1440/200] w-full overflow-hidden">
+        <p className="absolute left-[11.6%] top-[10%] whitespace-pre text-[1.006vw] font-semibold">
+          {"성신여자대학교 가온갤러리 | 파이룸 |  S101"}
+        </p>
+        <a
+          href={MAP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`absolute left-[11.6%] top-[26.5%] whitespace-nowrap text-[0.838vw] ${LINK_CLASS}`}
+        >
+          서울특별시 성북구 보문로34다길 2 / 수정관 1F | 난향관 4F | 조형 1관 1F
         </a>
-      </p>
-      <p className="absolute left-[11.6%] top-[82.5%] whitespace-pre text-[0.838vw] font-semibold">
-        <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
-          성신여자대학교 서양화과 .
-        </a>
-        {"  |  "}
-        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
-          instagram .
-        </a>
-        {"  |  "}
-      </p>
+        <p className="absolute left-[11.6%] top-[39%] whitespace-nowrap text-[0.838vw]">
+          서양화과 과사무실.{" "}
+          <a href={OFFICE_TEL_HREF} className={LINK_CLASS}>
+            02-920-7539
+          </a>
+        </p>
+        <p className="absolute left-[11.6%] top-[82.5%] whitespace-pre text-[0.838vw] font-semibold">
+          <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
+            성신여자대학교 서양화과 .
+          </a>
+          {"  |  "}
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
+            instagram .
+          </a>
+          {"  |  "}
+        </p>
 
-      {CREDITS.map(({ role, top, names }) => (
-        <div key={role}>
-          <p className={`absolute left-[70.42%] ${top} whitespace-nowrap text-[0.667vw] font-semibold`}>{role}</p>
-          {names.map((name, i) => (
-            <p key={name} className={`absolute ${CREDIT_NAME_LEFT[i]} ${top} whitespace-nowrap text-[0.667vw]`}>
-              {name}
-            </p>
-          ))}
-        </div>
-      ))}
-      <p className="absolute left-[70.42%] top-[82.5%] whitespace-nowrap text-[0.843vw]">
-        © 2026 성신여자대학교 서양화과 졸업전시위원회.
-      </p>
+        {CREDITS.map(({ role, top, names }) => (
+          <div key={role}>
+            <p className={`absolute left-[70.42%] ${top} whitespace-nowrap text-[0.667vw] font-semibold`}>{role}</p>
+            {names.map((name, i) => (
+              <p key={name} className={`absolute ${CREDIT_NAME_LEFT[i]} ${top} whitespace-nowrap text-[0.667vw]`}>
+                {name}
+              </p>
+            ))}
+          </div>
+        ))}
+        <p className="absolute left-[70.42%] top-[82.5%] whitespace-nowrap text-[0.843vw]">
+          © 2026 성신여자대학교 서양화과 졸업전시위원회.
+        </p>
+      </div>
     </footer>
   );
 }
