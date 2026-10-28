@@ -1,11 +1,17 @@
 "use client";
 
+import { Inter } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+// Header type is Inter Medium, like the footer: the inherited body font
+// (Arial) has no medium weight, so "font-medium" used to render as regular.
+const inter = Inter({ subsets: ["latin"], weight: ["500"] });
+
 const LOGO_SRC = "/images/main/logo-wordmark.svg";
 const LOGO_WHITE_SRC = "/images/main/logo-wordmark-white.svg";
+const MENU_CLOSE_ICON_SRC = "/images/main/menu-close-triangle.svg";
 const SEARCH_UNDERLINE_SRC = "/images/main/vector-1.svg";
 
 /**
@@ -75,16 +81,49 @@ function HeaderNav() {
   );
 }
 
+// 14px of 390 (Figma draws 16px; set 2px smaller on request).
+const MOBILE_MENU_ITEM_CLASS = "p-[2.564vw] text-[3.59vw] leading-[normal] font-medium";
+
+// Open/close motion for the mobile menu: the logo and ☰/▽ crossfade, and the
+// items drop in one after another (reversed on close, so the list folds up
+// from the bottom).
+const MOBILE_FADE = "transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none";
+const MOBILE_ITEM_STAGGER_MS = 90;
+
 /**
- * Mobile (<695px) header from the Figma 390x64 "header" Variant5: logo plus
- * a ☰ button instead of the nav row. Figma draws both white, over the home
- * page's red map; on other pages (white background) they switch to ink.
- * The open menu panel has no Figma design yet — it is a plain list of the
- * same nav items.
+ * Mobile (<695px) header from the Figma 390x64 "header" variants: a logo plus
+ * a ☰ button instead of the nav row (Variant5). Opening it (Variant6) turns
+ * the ☰ into a ▽ and drops the nav items, right-aligned, straight onto the
+ * page with no panel. Figma draws the home page only — white ☰/▽/items over
+ * the red map; on other (white) pages they switch to ink.
  */
-function MobileMenu({ onDark }: { onDark: boolean }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const barColor = onDark ? "bg-white" : "bg-[#1b191a]";
+function MobileMenu({
+  isOpen,
+  onToggle,
+  onClose,
+  onDark,
+}: {
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  onDark: boolean;
+}) {
+  const inkClass = onDark ? "bg-white" : "bg-[#1b191a]";
+  const textClass = onDark ? "text-white" : "text-[#1b191a]";
+  const items = [
+    <Link key="about" href="/about" onClick={onClose} className="hover:opacity-60">
+      About
+    </Link>,
+    <span key="student" className="cursor-default">
+      Student
+    </span>,
+    <span key="open-studio" className="cursor-default whitespace-nowrap">
+      Open Studio
+    </span>,
+    <span key="search" className="cursor-default">
+      Search
+    </span>,
+  ];
 
   return (
     <div className="min-[695px]:hidden">
@@ -93,28 +132,61 @@ function MobileMenu({ onDark }: { onDark: boolean }) {
         aria-label={isOpen ? "메뉴 닫기" : "메뉴 열기"}
         aria-expanded={isOpen}
         aria-controls="mobile-menu"
-        onClick={() => setIsOpen((open) => !open)}
-        className="absolute left-[86.03%] top-0 flex h-full w-[11.28%] items-center justify-center"
+        onClick={onToggle}
+        className="absolute left-[86.03%] top-0 h-full w-[11.28%]"
       >
-        <span className="flex w-[45.45%] flex-col gap-[0.513vw]">
-          <span className={`block h-[1.026vw] w-full ${barColor}`} />
-          <span className={`block h-[1.026vw] w-full ${barColor}`} />
-          <span className={`block h-[1.026vw] w-full ${barColor}`} />
+        {/* ☰ and ▽ are stacked and crossfade, with a quarter turn between them. */}
+        <span
+          className={`absolute inset-0 flex items-center justify-center ${MOBILE_FADE} ${
+            isOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
+          }`}
+        >
+          <span className="flex w-[45.45%] flex-col gap-[0.513vw]">
+            <span className={`block h-[1.026vw] w-full ${inkClass}`} />
+            <span className={`block h-[1.026vw] w-full ${inkClass}`} />
+            <span className={`block h-[1.026vw] w-full ${inkClass}`} />
+          </span>
+        </span>
+        <span
+          className={`absolute inset-0 flex items-center justify-center ${MOBILE_FADE} ${
+            isOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
+          }`}
+        >
+          {/* ▽ is a white-only SVG, so paint it through a mask to recolor it. */}
+          <span
+            className={`block aspect-[19.95/15.906] w-[45.34%] ${inkClass}`}
+            style={{ mask: `url(${MENU_CLOSE_ICON_SRC}) center / contain no-repeat` }}
+          />
         </span>
       </button>
-      {isOpen && (
-        <nav id="mobile-menu" className="fixed inset-x-0 top-[16.41vw] bg-white px-[8.205vw] py-4 shadow-sm">
-          <ul className="flex flex-col gap-3 text-base font-medium text-[#1b191a]">
-            <li>
-              <Link href="/about" onClick={() => setIsOpen(false)}>
-                About
-              </Link>
-            </li>
-            <li className="cursor-default">Student</li>
-            <li className="cursor-default">Open Studio</li>
-          </ul>
-        </nav>
-      )}
+      {/*
+        Fixed, not absolute: the list hangs below the header's 64px band,
+        which clips its overflow. The header is sticky at top 0, so viewport
+        coordinates line up with the Figma frame. Always mounted so it can
+        animate out; `inert` keeps the closed list out of tab order and
+        assistive tech.
+      */}
+      <nav
+        id="mobile-menu"
+        inert={!isOpen}
+        className={`fixed left-[66.53vw] top-[12.17vw] flex w-[27.69vw] flex-col items-end ${textClass} ${
+          isOpen ? "" : "pointer-events-none"
+        }`}
+      >
+        {items.map((item, i) => (
+          <div
+            key={item.key}
+            className={`${MOBILE_MENU_ITEM_CLASS} ${MOBILE_FADE} ${
+              isOpen ? "translate-y-0 opacity-100" : "-translate-y-[2vw] opacity-0"
+            }`}
+            style={{
+              transitionDelay: `${(isOpen ? i : items.length - 1 - i) * MOBILE_ITEM_STAGGER_MS}ms`,
+            }}
+          >
+            {item}
+          </div>
+        ))}
+      </nav>
     </div>
   );
 }
@@ -122,9 +194,15 @@ function MobileMenu({ onDark }: { onDark: boolean }) {
 export default function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  // Remember which route the menu was opened on, so navigating closes it.
+  const [menuOpenPath, setMenuOpenPath] = useState<string | null>(null);
+  const isMenuOpen = menuOpenPath === pathname;
+  // Mobile logo is white over the home map, ink elsewhere and while the menu
+  // is open; both are stacked so the swap crossfades.
+  const showWhiteLogo = isHome && !isMenuOpen;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-transparent">
+    <header className={`${inter.className} sticky top-0 z-50 w-full bg-transparent`}>
       <div className="relative aspect-[390/64] w-full overflow-hidden min-[695px]:aspect-[1440/64]">
         <Link
           href="/"
@@ -132,9 +210,21 @@ export default function SiteHeader() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            alt="Flux Point"
-            className="block h-full w-full min-[695px]:hidden"
-            src={isHome ? LOGO_WHITE_SRC : LOGO_SRC}
+            alt={showWhiteLogo ? "Flux Point" : ""}
+            aria-hidden={!showWhiteLogo}
+            className={`absolute inset-0 block h-full w-full ${MOBILE_FADE} min-[695px]:hidden ${
+              showWhiteLogo ? "opacity-100" : "opacity-0"
+            }`}
+            src={LOGO_WHITE_SRC}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt={showWhiteLogo ? "" : "Flux Point"}
+            aria-hidden={showWhiteLogo}
+            className={`absolute inset-0 block h-full w-full ${MOBILE_FADE} min-[695px]:hidden ${
+              showWhiteLogo ? "opacity-0" : "opacity-100"
+            }`}
+            src={LOGO_SRC}
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Flux Point" className="hidden h-full w-full min-[695px]:block" src={LOGO_SRC} />
@@ -142,8 +232,12 @@ export default function SiteHeader() {
         <div className="absolute inset-0 hidden min-[695px]:block">
           <HeaderNav />
         </div>
-        {/* Keyed by route so the menu closes on navigation. */}
-        <MobileMenu key={pathname} onDark={isHome} />
+        <MobileMenu
+          isOpen={isMenuOpen}
+          onToggle={() => setMenuOpenPath(isMenuOpen ? null : pathname)}
+          onClose={() => setMenuOpenPath(null)}
+          onDark={isHome}
+        />
       </div>
     </header>
   );
