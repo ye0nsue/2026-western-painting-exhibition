@@ -12,6 +12,10 @@ const BG_MAP_SRC = "/images/main/bg-red-map.webp";
 const BUILDING_S101_SRC = "/images/main/building-1-triangle.svg";
 const BUILDING_PAIROOM_SRC = "/images/main/building-2-square.svg";
 const BUILDING_GAON_SRC = "/images/main/building-3-circle.svg";
+// Mobile frame draws the campus rotated -90°, so the outlines are rotated too.
+const BUILDING_S101_MOBILE_SRC = "/images/main/building-1-triangle-mobile.svg";
+const BUILDING_PAIROOM_MOBILE_SRC = "/images/main/building-2-square-mobile.svg";
+const BUILDING_GAON_MOBILE_SRC = "/images/main/building-3-circle-mobile.svg";
 const PAIROOM_PREVIEW_SRC = "/images/main/pairoom-preview.png";
 const PAIROOM_DETAIL_PREVIEW_SRC = "/images/main/pairoom-detail-preview.png";
 const PAIROOM_DETAIL_DELAY_MS = 1000;
@@ -22,7 +26,7 @@ function PairoomHoverPreview({ stage }: { stage: PairoomHoverStage }) {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-0 bottom-0 top-[6.35%] min-[1220px]:top-[7.23%] z-20 overflow-hidden bg-white transition-opacity duration-[900ms] ease-out ${
+      className={`pointer-events-none absolute inset-x-0 bottom-0 top-[7.58%] min-[695px]:top-[6.35%] min-[1220px]:top-[7.23%] z-20 overflow-hidden bg-white transition-opacity duration-[900ms] ease-out ${
         stage === "idle" ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -74,47 +78,59 @@ export default function MainHero() {
 
   return (
     // The hero is a whole Figma frame: it slides up under the transparent
-    // sticky header (64/1440 of the width) so the map isn't cut off along
-    // the header's bottom edge, and every layer below uses frame coordinates
-    // directly. Two frames: "작은창" (1000x700) by default, and "Main"
-    // (1440x885) from 1220px — the midpoint between the two design widths.
-    // Both share x/width values (the small frame is the large one scaled by
-    // 1000/1440); only the taller small frame's crop and y values differ.
+    // sticky header so the map isn't cut off along the header's bottom edge,
+    // and every layer below uses frame coordinates directly. Three frames,
+    // switching at the midpoints between their design widths:
+    //   - mobile "작은창" (390x844) by default: the photo and building
+    //     outlines are rotated -90° to fit a portrait screen
+    //   - "작은창" (1000x700) from 695px
+    //   - "Main" (1440x885) from 1220px
+    // The 1000 and 1440 frames share x/width values (one is the other scaled
+    // by 1000/1440); only the taller 1000 frame's crop and y values differ.
     <section
       aria-label="Flux Point 메인 비주얼"
-      className="relative -mt-[4.444vw] aspect-[1000/700] w-full min-[1220px]:aspect-[1440/885] overflow-hidden bg-white"
+      data-home-hero
+      className="relative -mt-[16.41vw] aspect-[390/844] w-full overflow-hidden bg-white min-[695px]:-mt-[4.444vw] min-[695px]:aspect-[1000/700] min-[1220px]:aspect-[1440/885]"
     >
       {/* 배경 2 / 배경 1 */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt=""
-          aria-hidden
-          className="absolute left-0 top-[6.35%] h-[93.65%] w-[111.18%] max-w-none min-[1220px]:top-[6.97%] min-[1220px]:h-[95.95%] min-[1220px]:w-full"
-          src={BG_MAP_SRC}
-        />
+        <div className="absolute left-1/2 top-1/2 h-[46.21%] w-[216.41%] -translate-x-1/2 -translate-y-1/2 -rotate-90 overflow-hidden min-[695px]:left-0 min-[695px]:top-0 min-[695px]:h-full min-[695px]:w-full min-[695px]:translate-none min-[695px]:rotate-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt=""
+            aria-hidden
+            className="absolute left-[-2.84%] top-[-9.41%] h-[131.24%] w-[102.84%] max-w-none min-[695px]:left-0 min-[695px]:top-[6.35%] min-[695px]:h-[93.65%] min-[695px]:w-[111.18%] min-[1220px]:top-[6.97%] min-[1220px]:h-[95.95%] min-[1220px]:w-full"
+            src={BG_MAP_SRC}
+          />
+        </div>
       </div>
 
       {/* 조형 1관 S101 */}
-      <div className="absolute left-[43.36%] top-[13.51%] h-[24.60%] w-[15.14%] min-[1220px]:top-[15.39%] min-[1220px]:h-[28.02%]">
+      <div className="absolute left-[26.21%] top-[22.76%] h-[14.97%] w-[28.16%] min-[695px]:left-[43.36%] min-[695px]:top-[13.51%] min-[695px]:h-[24.60%] min-[695px]:w-[15.14%] min-[1220px]:top-[15.39%] min-[1220px]:h-[28.02%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="조형 1관 S101" className="block h-full w-full" src={BUILDING_S101_SRC} />
+        <img alt="조형 1관 S101" className="block h-full w-full min-[695px]:hidden" src={BUILDING_S101_MOBILE_SRC} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="조형 1관 S101" className="hidden h-full w-full min-[695px]:block" src={BUILDING_S101_SRC} />
       </div>
 
       {/* 수정관 1F 가온갤러리 */}
-      <div className="absolute left-[64.55%] top-[40.38%] h-[32.34%] w-[15.97%] min-[1220px]:top-[45.99%] min-[1220px]:h-[36.84%]">
+      <div className="absolute left-[55.97%] top-[45.51%] h-[18.56%] w-[28.24%] min-[695px]:left-[64.55%] min-[695px]:top-[40.38%] min-[695px]:h-[32.34%] min-[695px]:w-[15.97%] min-[1220px]:top-[45.99%] min-[1220px]:h-[36.84%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="수정관 1F 가온갤러리" className="block h-full w-full" src={BUILDING_GAON_SRC} />
+        <img alt="수정관 1F 가온갤러리" className="block h-full w-full min-[695px]:hidden" src={BUILDING_GAON_MOBILE_SRC} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="수정관 1F 가온갤러리" className="hidden h-full w-full min-[695px]:block" src={BUILDING_GAON_SRC} />
       </div>
 
       {/* 난향관 4F 파이룸 */}
       <div
-        className="absolute left-[26.07%] top-[39.30%] h-[38.29%] w-[8.68%] cursor-pointer min-[1220px]:top-[44.77%] min-[1220px]:h-[43.62%]"
+        className="absolute left-[9.01%] top-[40.95%] h-[23.83%] w-[15.24%] cursor-pointer min-[695px]:left-[26.07%] min-[695px]:top-[39.30%] min-[695px]:h-[38.29%] min-[695px]:w-[8.68%] min-[1220px]:top-[44.77%] min-[1220px]:h-[43.62%]"
         onMouseEnter={handlePairoomEnter}
         onMouseLeave={handlePairoomLeave}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="난향관 4F 파이룸" className="block h-full w-full" src={BUILDING_PAIROOM_SRC} />
+        <img alt="난향관 4F 파이룸" className="block h-full w-full min-[695px]:hidden" src={BUILDING_PAIROOM_MOBILE_SRC} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="난향관 4F 파이룸" className="hidden h-full w-full min-[695px]:block" src={BUILDING_PAIROOM_SRC} />
       </div>
       <PairoomHoverPreview stage={pairoomStage} />
     </section>

@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const LOGO_SRC = "/images/main/logo-wordmark.svg";
+const LOGO_WHITE_SRC = "/images/main/logo-wordmark-white.svg";
 const SEARCH_UNDERLINE_SRC = "/images/main/vector-1.svg";
 
 /**
@@ -73,15 +75,75 @@ function HeaderNav() {
   );
 }
 
+/**
+ * Mobile (<695px) header from the Figma 390x64 "header" Variant5: logo plus
+ * a ☰ button instead of the nav row. Figma draws both white, over the home
+ * page's red map; on other pages (white background) they switch to ink.
+ * The open menu panel has no Figma design yet — it is a plain list of the
+ * same nav items.
+ */
+function MobileMenu({ onDark }: { onDark: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const barColor = onDark ? "bg-white" : "bg-[#1b191a]";
+
+  return (
+    <div className="min-[695px]:hidden">
+      <button
+        type="button"
+        aria-label={isOpen ? "메뉴 닫기" : "메뉴 열기"}
+        aria-expanded={isOpen}
+        aria-controls="mobile-menu"
+        onClick={() => setIsOpen((open) => !open)}
+        className="absolute left-[86.03%] top-0 flex h-full w-[11.28%] items-center justify-center"
+      >
+        <span className="flex w-[45.45%] flex-col gap-[0.513vw]">
+          <span className={`block h-[1.026vw] w-full ${barColor}`} />
+          <span className={`block h-[1.026vw] w-full ${barColor}`} />
+          <span className={`block h-[1.026vw] w-full ${barColor}`} />
+        </span>
+      </button>
+      {isOpen && (
+        <nav id="mobile-menu" className="fixed inset-x-0 top-[16.41vw] bg-white px-[8.205vw] py-4 shadow-sm">
+          <ul className="flex flex-col gap-3 text-base font-medium text-[#1b191a]">
+            <li>
+              <Link href="/about" onClick={() => setIsOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li className="cursor-default">Student</li>
+            <li className="cursor-default">Open Studio</li>
+          </ul>
+        </nav>
+      )}
+    </div>
+  );
+}
+
 export default function SiteHeader() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
   return (
     <header className="sticky top-0 z-50 w-full bg-transparent">
-      <div className="relative aspect-[1440/64] w-full overflow-hidden">
-        <Link href="/" className="absolute left-[12.05%] top-1/2 h-[30.48%] w-[8.19%] -translate-y-1/2">
+      <div className="relative aspect-[390/64] w-full overflow-hidden min-[695px]:aspect-[1440/64]">
+        <Link
+          href="/"
+          className="absolute left-[8.205%] top-1/2 h-[21.54%] w-[21.385%] -translate-y-1/2 min-[695px]:left-[12.05%] min-[695px]:h-[30.48%] min-[695px]:w-[8.19%]"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="Flux Point" className="block h-full w-full" src={LOGO_SRC} />
+          <img
+            alt="Flux Point"
+            className="block h-full w-full min-[695px]:hidden"
+            src={isHome ? LOGO_WHITE_SRC : LOGO_SRC}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="Flux Point" className="hidden h-full w-full min-[695px]:block" src={LOGO_SRC} />
         </Link>
-        <HeaderNav />
+        <div className="absolute inset-0 hidden min-[695px]:block">
+          <HeaderNav />
+        </div>
+        {/* Keyed by route so the menu closes on navigation. */}
+        <MobileMenu key={pathname} onDark={isHome} />
       </div>
     </header>
   );
