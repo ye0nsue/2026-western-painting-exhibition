@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-
 /**
  * Red-toned aerial photo of the campus. Positioned exactly as the Figma
  * "배경 1" layer, so a replacement should keep the same 3402x2006 framing
@@ -16,66 +12,8 @@ const BUILDING_GAON_SRC = "/images/main/building-3-circle.svg";
 const BUILDING_S101_MOBILE_SRC = "/images/main/building-1-triangle-mobile.svg";
 const BUILDING_PAIROOM_MOBILE_SRC = "/images/main/building-2-square-mobile.svg";
 const BUILDING_GAON_MOBILE_SRC = "/images/main/building-3-circle-mobile.svg";
-const PAIROOM_PREVIEW_SRC = "/images/main/pairoom-preview.png";
-const PAIROOM_DETAIL_PREVIEW_SRC = "/images/main/pairoom-detail-preview.png";
-const PAIROOM_DETAIL_DELAY_MS = 1000;
-
-type PairoomHoverStage = "idle" | "preview" | "detail";
-
-function PairoomHoverPreview({ stage }: { stage: PairoomHoverStage }) {
-  return (
-    <div
-      aria-hidden
-      className={`pointer-events-none absolute inset-x-0 bottom-0 top-[7.58%] min-[695px]:top-[6.35%] min-[1220px]:top-[7.23%] z-20 overflow-hidden bg-white transition-opacity duration-[900ms] ease-out ${
-        stage === "idle" ? "opacity-0" : "opacity-100"
-      }`}
-    >
-      {/*
-        These screenshots are of the full 1440x885 Figma frames, header
-        included — but the live header renders once, globally, over the
-        hero's top 64px. This preview box starts below that band; oversize +
-        shift up by the header's share (64/885) so the baked-in header crops
-        off instead of doubling up with the real one.
-      */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt=""
-        className={`absolute left-0 top-[-7.80%] h-[107.80%] w-full object-cover transition-opacity duration-300 ${
-          stage === "detail" ? "opacity-0" : "opacity-100"
-        }`}
-        src={PAIROOM_PREVIEW_SRC}
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt=""
-        className={`absolute left-0 top-[-7.80%] h-[107.80%] w-full object-cover object-top transition-opacity duration-300 ${
-          stage === "detail" ? "opacity-100" : "opacity-0"
-        }`}
-        src={PAIROOM_DETAIL_PREVIEW_SRC}
-      />
-    </div>
-  );
-}
 
 export default function MainHero() {
-  const [pairoomStage, setPairoomStage] = useState<PairoomHoverStage>("idle");
-  const pairoomTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (pairoomTimerRef.current) clearTimeout(pairoomTimerRef.current);
-    };
-  }, []);
-
-  function handlePairoomEnter() {
-    setPairoomStage("preview");
-    pairoomTimerRef.current = setTimeout(() => setPairoomStage("detail"), PAIROOM_DETAIL_DELAY_MS);
-  }
-  function handlePairoomLeave() {
-    if (pairoomTimerRef.current) clearTimeout(pairoomTimerRef.current);
-    setPairoomStage("idle");
-  }
-
   return (
     // The hero is a whole Figma frame: it slides up under the transparent
     // sticky header so the map isn't cut off along the header's bottom edge,
@@ -124,16 +62,13 @@ export default function MainHero() {
 
       {/* 난향관 4F 파이룸 */}
       <div
-        className="absolute left-[9.01%] top-[40.95%] h-[23.83%] w-[15.24%] cursor-pointer min-[695px]:left-[26.07%] min-[695px]:top-[39.30%] min-[695px]:h-[38.29%] min-[695px]:w-[8.68%] min-[1220px]:left-[27.60%] min-[1220px]:top-[36.69%] min-[1220px]:h-[41.43%] min-[1220px]:w-[8.25%]"
-        onMouseEnter={handlePairoomEnter}
-        onMouseLeave={handlePairoomLeave}
+        className="absolute left-[9.01%] top-[40.95%] h-[23.83%] w-[15.24%] min-[695px]:left-[26.07%] min-[695px]:top-[39.30%] min-[695px]:h-[38.29%] min-[695px]:w-[8.68%] min-[1220px]:left-[27.60%] min-[1220px]:top-[36.69%] min-[1220px]:h-[41.43%] min-[1220px]:w-[8.25%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="난향관 4F 파이룸" className="block h-full w-full min-[695px]:hidden" src={BUILDING_PAIROOM_MOBILE_SRC} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="난향관 4F 파이룸" className="hidden h-full w-full min-[695px]:block" src={BUILDING_PAIROOM_SRC} />
       </div>
-      <PairoomHoverPreview stage={pairoomStage} />
     </section>
   );
 }
