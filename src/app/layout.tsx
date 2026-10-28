@@ -11,8 +11,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "2026 서양화과 졸업전시",
-  description: "2026 서양화과 졸업전시 공식 사이트",
+  title: "2026 성신여자대학교 서양화과 졸업전시",
+  description: "2026 성신여자대학교 서양화과 졸업전시 공식 사이트",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -1,5 +1,5 @@
 export const exhibitionInfo = {
-  title: "2026 서양화과 졸업전시",
+  title: "2026 성신여자대학교 서양화과 졸업전시",
   period: "2026.12.01 - 2026.12.06",
   location: "성신여자대학교 돈암수정캠퍼스",
   hours: "00:00 - 00:00",
