@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import Footer from "@/components/Footer";
+import OverlayScrollbar from "@/components/OverlayScrollbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <Footer />
+        <OverlayScrollbar />
       </body>
     </html>
   );

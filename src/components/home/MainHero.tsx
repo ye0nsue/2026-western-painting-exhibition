@@ -3,17 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Background collage photo. Swap this single file to change the hero's
- * background image — it is cropped into three overlapping windows below
- * (left half / right half / center seam) to reproduce the split-map layout
- * from the Figma design, so any replacement should keep a similar wide,
- * busy composition for the crop windows to still read well.
+ * Red-toned aerial photo of the campus. Positioned exactly as the Figma
+ * "배경 1" layer, so a replacement should keep the same 3402x2006 framing
+ * for the building outlines below to still sit on their footprints.
  */
-const BG_MAP_SRC = "/images/main/bg-map.png";
+const BG_MAP_SRC = "/images/main/bg-red-map.webp";
 
-const POSTER_GAON_SRC = "/images/main/poster-gaon-gallery.svg";
-const POSTER_S101_SRC = "/images/main/poster-s101.svg";
-const POSTER_PAIROOM_SRC = "/images/main/poster-pairoom.svg";
+const BUILDING_S101_SRC = "/images/main/building-1-triangle.svg";
+const BUILDING_PAIROOM_SRC = "/images/main/building-2-square.svg";
+const BUILDING_GAON_SRC = "/images/main/building-3-circle.svg";
 const PAIROOM_PREVIEW_SRC = "/images/main/pairoom-preview.png";
 const PAIROOM_DETAIL_PREVIEW_SRC = "/images/main/pairoom-detail-preview.png";
 const PAIROOM_DETAIL_DELAY_MS = 1000;
@@ -24,16 +22,16 @@ function PairoomHoverPreview({ stage }: { stage: PairoomHoverStage }) {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-0 z-20 overflow-hidden bg-white transition-opacity duration-[900ms] ease-out ${
+      className={`pointer-events-none absolute inset-x-0 bottom-0 top-[7.23%] z-20 overflow-hidden bg-white transition-opacity duration-[900ms] ease-out ${
         stage === "idle" ? "opacity-0" : "opacity-100"
       }`}
     >
       {/*
         These screenshots are of the full 1440x885 Figma frames, header
-        included — but the live header now renders once, globally, above
-        this hero. Oversize + shift up by the header's share (64/885) so the
-        baked-in header crops off above the hero's top edge instead of
-        doubling up with the real one.
+        included — but the live header renders once, globally, over the
+        hero's top 64px. This preview box starts below that band; oversize +
+        shift up by the header's share (64/885) so the baked-in header crops
+        off instead of doubling up with the real one.
       */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -75,64 +73,45 @@ export default function MainHero() {
   }
 
   return (
+    // The hero is the whole 1440x885 Figma frame: it slides up under the
+    // transparent sticky header (64/1440 of the width) so the map isn't cut
+    // off along the header's bottom edge, and every layer below uses frame
+    // coordinates directly.
     <section
       aria-label="Flux Point 메인 비주얼"
-      className="relative aspect-[1440/821] w-full overflow-hidden bg-white"
+      className="relative -mt-[4.444vw] aspect-[1440/885] w-full overflow-hidden bg-white"
     >
-      {/* 배경이미지 */}
-      <div className="absolute left-[-0.17%] top-[-5.82%] h-[113.51%] w-[48.68%] overflow-hidden">
+      {/* 배경 1 */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
           aria-hidden
-          className="absolute left-0 top-0 h-full w-[216.41%] max-w-none"
+          className="absolute left-0 top-[6.97%] h-[95.95%] w-full max-w-none"
           src={BG_MAP_SRC}
         />
       </div>
-      <div className="absolute left-[50.86%] top-[-6.21%] h-[114.67%] w-[49.81%] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt=""
-          aria-hidden
-          className="absolute left-[-113.70%] top-0 h-full w-[213.70%] max-w-none"
-          src={BG_MAP_SRC}
-        />
-      </div>
-      <div className="absolute left-[48.52%] top-[-5.82%] h-[113.51%] w-[2.34%] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt=""
-          aria-hidden
-          className="absolute left-[-2183.66%] top-0 h-full w-[4499.32%] max-w-none"
-          src={BG_MAP_SRC}
-        />
-      </div>
-      <div className="absolute left-[48.99%] top-[7.79%] h-[45.33%] w-[1.52%] bg-[#fff1e4]" />
-      <div className="absolute left-[48.05%] top-[-7.76%] h-[12.58%] w-[3.43%] bg-white" />
-      <div className="absolute left-0 top-[-7.87%] h-[2.93%] w-full bg-white" />
 
-      {/* 가온갤러리 */}
-      <div className="absolute left-[65.02%] top-[42.58%] h-[38.61%] w-[15.44%]">
+      {/* 조형 1관 S101 */}
+      <div className="absolute left-[43.36%] top-[15.39%] h-[28.02%] w-[15.14%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" className="block h-full w-full" src={POSTER_GAON_SRC} />
+        <img alt="조형 1관 S101" className="block h-full w-full" src={BUILDING_S101_SRC} />
       </div>
 
-      {/* S101 */}
-      <div className="absolute left-[48.56%] top-[8.65%] h-[31.09%] w-[15.40%]">
+      {/* 수정관 1F 가온갤러리 */}
+      <div className="absolute left-[64.55%] top-[45.99%] h-[36.84%] w-[15.97%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" className="block h-full w-full" src={POSTER_S101_SRC} />
+        <img alt="수정관 1F 가온갤러리" className="block h-full w-full" src={BUILDING_GAON_SRC} />
       </div>
 
-      {/* 파이룸 */}
+      {/* 난향관 4F 파이룸 */}
       <div
-        className="absolute left-[22.71%] top-[30.55%] h-[53.34%] w-[10.40%] rotate-[-18.46deg] cursor-pointer"
+        className="absolute left-[26.07%] top-[44.77%] h-[43.62%] w-[8.68%] cursor-pointer"
         onMouseEnter={handlePairoomEnter}
         onMouseLeave={handlePairoomLeave}
       >
-        <div className="flex h-full w-full items-center justify-center p-[1.06vw]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="파이룸" className="block h-full w-full" src={POSTER_PAIROOM_SRC} />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="난향관 4F 파이룸" className="block h-full w-full" src={BUILDING_PAIROOM_SRC} />
       </div>
       <PairoomHoverPreview stage={pairoomStage} />
     </section>

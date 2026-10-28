@@ -5,10 +5,24 @@
   --foreground: #171717;
 }
 
+/* Figma "final-red" — the site's one brand red (footer, header search, building markers). */
+@theme static {
+  --color-final-red: #dc241b;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
+}
+
+/* The native scrollbar takes width when it appears and shrinks the
+   viewport-proportional layout; OverlayScrollbar draws one on top instead. */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
