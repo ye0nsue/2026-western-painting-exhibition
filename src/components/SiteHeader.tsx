@@ -85,10 +85,23 @@ function HeaderNav() {
 const MOBILE_MENU_ITEM_CLASS = "p-[2.564vw] text-[3.59vw] leading-[normal] font-medium";
 
 // Open/close motion for the mobile menu: the logo and ☰/▽ crossfade, and the
-// items drop in one after another (reversed on close, so the list folds up
-// from the bottom).
-const MOBILE_FADE = "transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none";
+// items drop in one after another. On close they fade out in place, bottom
+// item first.
+const MOBILE_FADE_MS = 500;
+// Tailwind v4 translate-*/rotate-* set the `translate`/`rotate` properties,
+// not `transform`, so those are what has to transition.
+const MOBILE_FADE = "transition-[opacity,rotate] duration-500 ease-out motion-reduce:transition-none";
 const MOBILE_ITEM_STAGGER_MS = 90;
+
+function mobileItemTransition(isOpen: boolean, delayMs: number) {
+  if (isOpen) {
+    return `opacity ${MOBILE_FADE_MS}ms ease-out ${delayMs}ms, translate ${MOBILE_FADE_MS}ms ease-out ${delayMs}ms`;
+  }
+  // Closing: only opacity animates. The drop-in offset snaps back once the
+  // item is invisible, so it doesn't drift upward while fading out.
+  const fadedAt = delayMs + MOBILE_FADE_MS;
+  return `opacity ${MOBILE_FADE_MS}ms ease-out ${delayMs}ms, translate 0s linear ${fadedAt}ms`;
+}
 
 /**
  * Mobile (<695px) header from the Figma 390x64 "header" variants: a logo plus
@@ -176,11 +189,11 @@ function MobileMenu({
         {items.map((item, i) => (
           <div
             key={item.key}
-            className={`${MOBILE_MENU_ITEM_CLASS} ${MOBILE_FADE} ${
+            className={`${MOBILE_MENU_ITEM_CLASS} motion-reduce:transition-none! ${
               isOpen ? "translate-y-0 opacity-100" : "-translate-y-[2vw] opacity-0"
             }`}
             style={{
-              transitionDelay: `${(isOpen ? i : items.length - 1 - i) * MOBILE_ITEM_STAGGER_MS}ms`,
+              transition: mobileItemTransition(isOpen, (isOpen ? i : items.length - 1 - i) * MOBILE_ITEM_STAGGER_MS),
             }}
           >
             {item}
