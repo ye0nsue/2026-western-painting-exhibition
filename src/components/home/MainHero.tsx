@@ -85,8 +85,9 @@ export default function MainHero() {
     //     outlines are rotated -90° to fit a portrait screen
     //   - "작은창" (1000x700) from 695px
     //   - "Main" (1440x885) from 1220px
-    // The 1000 and 1440 frames share x/width values (one is the other scaled
-    // by 1000/1440); only the taller 1000 frame's crop and y values differ.
+    // The 1440 frame's buildings are drawn at 95% of the 1000 frame's scaled
+    // size, so each tier sets its own position and size; the outline SVGs
+    // are shared (the 95% exports are the same artwork, stroke included).
     <section
       aria-label="Flux Point 메인 비주얼"
       data-home-hero
@@ -106,7 +107,7 @@ export default function MainHero() {
       </div>
 
       {/* 조형 1관 S101 */}
-      <div className="absolute left-[26.21%] top-[22.76%] h-[14.97%] w-[28.16%] min-[695px]:left-[43.36%] min-[695px]:top-[13.51%] min-[695px]:h-[24.60%] min-[695px]:w-[15.14%] min-[1220px]:top-[15.39%] min-[1220px]:h-[28.02%]">
+      <div className="absolute left-[26.21%] top-[22.76%] h-[14.97%] w-[28.16%] min-[695px]:left-[43.36%] min-[695px]:top-[13.51%] min-[695px]:h-[24.60%] min-[695px]:w-[15.14%] min-[1220px]:left-[42.81%] min-[1220px]:top-[15.03%] min-[1220px]:h-[26.62%] min-[1220px]:w-[14.38%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="조형 1관 S101" className="block h-full w-full min-[695px]:hidden" src={BUILDING_S101_MOBILE_SRC} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -114,7 +115,7 @@ export default function MainHero() {
       </div>
 
       {/* 수정관 1F 가온갤러리 */}
-      <div className="absolute left-[55.97%] top-[45.51%] h-[18.56%] w-[28.24%] min-[695px]:left-[64.55%] min-[695px]:top-[40.38%] min-[695px]:h-[32.34%] min-[695px]:w-[15.97%] min-[1220px]:top-[45.99%] min-[1220px]:h-[36.84%]">
+      <div className="absolute left-[55.97%] top-[45.51%] h-[18.56%] w-[28.24%] min-[695px]:left-[64.55%] min-[695px]:top-[40.38%] min-[695px]:h-[32.34%] min-[695px]:w-[15.97%] min-[1220px]:left-[64.95%] min-[1220px]:top-[45.54%] min-[1220px]:h-[34.99%] min-[1220px]:w-[15.17%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="수정관 1F 가온갤러리" className="block h-full w-full min-[695px]:hidden" src={BUILDING_GAON_MOBILE_SRC} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -123,7 +124,7 @@ export default function MainHero() {
 
       {/* 난향관 4F 파이룸 */}
       <div
-        className="absolute left-[9.01%] top-[40.95%] h-[23.83%] w-[15.24%] cursor-pointer min-[695px]:left-[26.07%] min-[695px]:top-[39.30%] min-[695px]:h-[38.29%] min-[695px]:w-[8.68%] min-[1220px]:top-[44.77%] min-[1220px]:h-[43.62%]"
+        className="absolute left-[9.01%] top-[40.95%] h-[23.83%] w-[15.24%] cursor-pointer min-[695px]:left-[26.07%] min-[695px]:top-[39.30%] min-[695px]:h-[38.29%] min-[695px]:w-[8.68%] min-[1220px]:left-[27.60%] min-[1220px]:top-[36.69%] min-[1220px]:h-[41.43%] min-[1220px]:w-[8.25%]"
         onMouseEnter={handlePairoomEnter}
         onMouseLeave={handlePairoomLeave}
       >
