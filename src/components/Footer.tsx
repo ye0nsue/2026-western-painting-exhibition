@@ -14,6 +14,7 @@ const notoSansKr = Noto_Sans_KR({
 const MAP_URL = "https://naver.me/x9BAFxI3";
 const DEPARTMENT_URL = "https://www.sungshin.ac.kr/western/index.do";
 const INSTAGRAM_URL = "https://www.instagram.com/sswu_painting_g/";
+const OFFICE_TEL_HREF = "tel:+82-2-920-7539";
 
 /**
  * Committee credits, laid out as in the Figma footer: role labels share one
@@ -50,7 +51,12 @@ export default function Footer() {
       >
         서울특별시 성북구 보문로34다길 2 / 수정관 1F | 난향관 4F | 조형 1관 1F
       </a>
-      <p className="absolute left-[11.6%] top-[39%] whitespace-nowrap text-[0.838vw]">서양화과 과사무실. 02-920-7539</p>
+      <p className="absolute left-[11.6%] top-[39%] whitespace-nowrap text-[0.838vw]">
+        서양화과 과사무실.{" "}
+        <a href={OFFICE_TEL_HREF} className={LINK_CLASS}>
+          02-920-7539
+        </a>
+      </p>
       <p className="absolute left-[11.6%] top-[82.5%] whitespace-pre text-[0.838vw] font-semibold">
         <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
           성신여자대학교 서양화과 .
