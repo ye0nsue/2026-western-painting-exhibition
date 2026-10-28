@@ -27,7 +27,7 @@ const CREDITS = [
 ] as const;
 const CREDIT_NAME_LEFT = ["left-[76.52%]", "left-[79.02%]", "left-[81.52%]", "left-[84.02%]", "left-[86.52%]"] as const;
 
-const LINK_CLASS = "underline decoration-solid hover:opacity-70";
+const LINK_CLASS = "hover:opacity-70";
 
 /**
  * Site-wide footer from the Figma "footer" component (1440x200). Like the
