@@ -49,30 +49,30 @@ export default function Splash({ children }: { children: ReactNode }) {
     const mctx = maskCv.getContext("2d")!;
 
     const PH = {
-      w: 1300,
-      h: 2284,
+      w: 1500,
+      h: 2544,
       coast: [
-        280.4, 269.8, 265.8, 259.3, 248.3, 241.8, 229.1, 227.1, 227.1, 222.2, 222.2, 212.9, 207.6,
-        206.8, 204.7, 198.2, 195.4, 201.5, 201.9, 193.7, 186.8, 170.5, 164.8, 159.1, 156.7, 152.2,
-        144.9, 143.7, 144.1, 144.1, 145.3, 147.3, 142.9, 140.8, 138.8, 137.6, 135.1, 143.3, 148.6,
-        155.1, 154.7, 143.3, 116.4, 118.0, 118.4, 120.5, 122.9, 122.9, 108.7, 94.4, 92.0, 93.6,
-        93.6, 85.9, 77.3, 74.1, 71.6, 71.6, 71.6, 69.2, 80.6, 210.0, 776.2, 1002.5,
+        179.0, 176.0, 171.0, 170.0, 164.0, 161.0, 158.0, 154.0, 151.0, 147.0, 143.0, 139.0, 138.0,
+        137.0, 134.0, 129.0, 126.0, 126.0, 121.0, 115.0, 111.0, 102.0, 97.0, 88.0, 74.0, 71.0,
+        73.0, 70.0, 66.0, 64.0, 66.0, 63.0, 60.0, 58.0, 58.0, 62.0, 64.0, 70.0, 70.0, 72.0,
+        85.0, 87.0, 59.0, 51.0, 43.0, 40.0, 49.0, 41.0, 34.0, 27.0, 20.0, 16.0, 10.0, 10.0,
+        10.0, 10.0, 5.0, 0.0, 19.0, 284.0, 958.0, 897.0, 913.0, 938.0,
       ],
     };
-    const PHOTO_RED = "#f8422f";
-    const BAND_RED = "#f33423";
+    const PHOTO_RED = "#e52525";
+    const BAND_RED = "#e52525";
     let gridStart = 4.6;
     const WAVE_START = 5500;
     const WAVE_DUR = 1900;
 
     // 시안(2000x1250) 좌표계
-    const D = { photoX: 964.2, photoScale: 0.7988, photoY: -222, gx: 94.7, gy: 92.2, gy0: 71.5, titleX: 71.5, titleTop: 54.2, titleW: 780.6 };
+    const D = { photoX: 1051.5, photoScale: 0.6323, photoY: 0, gx: 94.7, gy: 92.2, gy0: 71.5, titleX: 71.5, titleTop: 54.2, titleW: 780.6 };
     type Building = { d: [number, number][]; m: "tri" | "sq" | "dot" | null; x?: number; y?: number; t: number };
     const B: Building[] = [
-      { d: [[825.7, 290.3], [878.5, 413.2], [879.9, 422.2], [873.6, 422.9], [848.6, 417.4], [841.0, 453.5], [833.3, 454.2], [818.8, 450.7], [816.0, 478.5], [838.9, 486.8], [857.6, 470.8], [863.9, 470.8], [888.9, 484.0], [888.9, 488.9], [882.6, 502.8], [918.1, 505.6], [920.8, 497.9], [926.4, 496.5], [1024.3, 530.6], [1033.3, 491.0], [936.8, 457.6], [935.4, 451.4], [937.5, 445.1], [919.4, 433.3], [916.0, 428.5], [854.2, 279.9]], m: "tri", x: 910.9, y: 466.6, t: 1.6 },
-      { d: [[794.4, 588.9], [753.5, 580.6], [725.0, 674.3], [720.8, 674.3], [713.2, 666.7], [713.2, 609.0], [684.7, 609.0], [680.6, 731.2], [704.9, 729.9], [713.2, 702.1], [718.1, 701.4], [725.7, 706.2], [725.7, 814.6], [756.9, 814.6], [768.8, 688.2], [795.1, 597.9]], m: "sq", x: 749.0, y: 693.8, t: 1.85 },
-      { d: [[739.6, 820.1], [726.4, 827.1], [745.8, 927.1], [714.6, 941.0], [720.8, 949.3], [720.8, 954.2], [709.7, 957.6], [711.8, 984.7], [795.1, 972.9], [791.7, 938.2], [772.9, 946.5], [767.4, 945.8], [762.5, 827.1], [742.4, 830.6]], m: null, t: 1.85 },
-      { d: [[1360.4, 663.9], [1354.2, 672.2], [1325.0, 673.6], [1239.6, 925.7], [1272.2, 934.0], [1270.8, 946.5], [1356.9, 976.4], [1368.8, 952.8], [1385.4, 952.8], [1388.9, 929.9], [1420.1, 941.0], [1439.6, 859.7], [1450.7, 858.3], [1452.1, 851.4], [1456.2, 846.5], [1446.5, 842.4], [1446.5, 836.8], [1452.8, 822.2], [1433.3, 821.5], [1433.3, 815.3], [1450.0, 769.4], [1440.3, 760.4], [1447.2, 739.6], [1447.2, 728.5], [1436.8, 719.4], [1441.7, 695.1]], m: "dot", x: 1348.3, y: 820.1, t: 2.1 },
+      { d: [[830.9, 303.0], [881.3, 424.0], [853.7, 418.7], [844.8, 453.4], [825.9, 449.2], [822.1, 479.8], [848.3, 490.6], [862.9, 472.8], [868.2, 473.2], [889.3, 484.5], [884.2, 500.0], [919.0, 505.2], [923.6, 496.9], [1004.5, 525.3], [1015.7, 529.1], [1017.9, 528.1], [1028.3, 487.0], [937.7, 455.8], [940.8, 446.7], [920.5, 434.7], [863.6, 293.9], [860.6, 292.8]], m: "tri", x: 910.9, y: 466.6, t: 1.6 },
+      { d: [[796.0, 596.2], [750.7, 588.1], [725.8, 673.7], [719.1, 667.2], [720.5, 614.8], [695.3, 612.7], [688.0, 614.4], [683.4, 731.1], [710.1, 729.3], [713.2, 726.0], [719.0, 704.4], [725.6, 706.3], [726.1, 807.2], [759.0, 808.1], [771.2, 686.2], [795.9, 603.4]], m: "sq", x: 749.0, y: 693.8, t: 1.85 },
+      { d: [[764.1, 812.1], [746.5, 816.2], [744.1, 811.1], [732.8, 811.1], [726.2, 813.5], [745.9, 909.1], [744.4, 911.2], [715.9, 917.2], [721.2, 928.9], [708.6, 934.3], [713.6, 961.7], [715.6, 962.5], [795.3, 948.7], [790.6, 913.9], [777.2, 917.5], [775.4, 915.2], [774.0, 918.9], [768.4, 920.5]], m: null, t: 1.85 },
+      { d: [[1351.9, 665.5], [1345.1, 683.6], [1322.8, 677.6], [1235.3, 928.1], [1264.6, 937.0], [1262.3, 946.6], [1354.0, 979.0], [1363.7, 955.0], [1380.6, 956.5], [1385.0, 935.1], [1417.7, 944.7], [1436.3, 866.5], [1446.3, 865.0], [1453.4, 847.2], [1443.2, 842.4], [1448.1, 826.6], [1429.6, 821.0], [1433.6, 809.6], [1439.8, 809.5], [1434.2, 807.6], [1446.0, 773.3], [1435.8, 766.3], [1445.6, 744.1], [1428.8, 729.1], [1438.9, 698.3]], m: "dot", x: 1348.3, y: 820.1, t: 2.1 },
     ];
 
     function el<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string, string | number>, parent?: Element) {
@@ -188,7 +188,7 @@ export default function Splash({ children }: { children: ReactNode }) {
 
       let sc = 0, px = 0, py = 0;
       if (mob) {
-        px = 169.2 * km; py = -14 * km; box = { x: px, y: py, w: 772.4 * km, h: 1422.9 * km };
+        px = 205.2 * km; py = 0; box = { x: px, y: py, w: 843.6 * km, h: 1430.7 * km };
       } else if (!compact) {
         sc = D.photoScale * k; px = D.photoX * k; py = D.photoY * k;
       } else {
@@ -208,10 +208,17 @@ export default function Splash({ children }: { children: ReactNode }) {
       if (mob) tf = "scale(" + km + ")";
       else if (!compact) tf = "scale(" + k + ")";
       else {
-        const kb = Math.min((0.92 * W) / 776, (0.5 * H) / 705);
-        tf = "translate(" + (0.04 * W - 681 * kb) + " " + (0.2 * H - 280 * kb) + ") scale(" + kb + ")";
+        let kb = Math.min((0.92 * W) / 776, (0.5 * H) / 705);
+        // ●건물만 사진 위에 올라가도록: ●건물 왼쪽 끝을 그 높이의 사진 경계에 맞추고, ▲■건물은 흰 배경에 둠
+        const cy = 0.2 * H + (820 - 280) * kb;
+        const ci = Math.max(0, Math.min(PH.coast.length - 1, Math.round(((cy - box.y) / box.h) * PH.coast.length - 0.5)));
+        const coastX = box.x + PH.coast[ci] * sc;
+        if (coastX - (1240 - 680) * kb < 0.03 * W) kb = (coastX - 0.03 * W) / (1240 - 680);
+        tf = "translate(" + (coastX - 1240 * kb + 100) + " " + (0.2 * H - 280 * kb) + ") scale(" + kb + ")";
       }
       bldG.setAttribute("transform", tf);
+      // 빈 도형 선 굵기 = 건물 라인 굵기
+      stage.style.setProperty("--ow", (2.3 * parseFloat(/scale\(([\d.]+)\)\s*$/.exec(tf)![1])).toFixed(3) + "px");
 
       const tw = mob ? 649 * km : compact ? 0.67 * W : D.titleW * k;
       title.style.width = tw + "px";
@@ -449,11 +456,11 @@ export default function Splash({ children }: { children: ReactNode }) {
   --paper: #ffffff;
   --ink: #1b191a;
   --legend: #515151;
-  --grid: #f86e63;
-  --stroke: #b85341;
-  --fill: #fefbf6;
-  --mark: #cb2d31;
-  --band: #f33423;
+  --grid: #DC241B;
+  --stroke: #DC241B;
+  --fill: #fff;
+  --mark: #DC241B;
+  --band: #e52525;
   --display: var(--font-splash-inter), 'Helvetica Neue', Arial, sans-serif;
   --body: var(--font-splash-inter), var(--font-splash-noto-kr), 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --fpsplash-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -485,7 +492,7 @@ export default function Splash({ children }: { children: ReactNode }) {
 .fpsplash .photo { position: absolute; left: 0; top: 0; max-width: none; display: block; pointer-events: none; }
 .fpsplash svg.layer { overflow: visible; pointer-events: none; }
 
-.fpsplash .gl { stroke: var(--grid); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.fpsplash .gl { stroke: var(--grid); stroke-width: 0.5; stroke-dasharray: 1; stroke-dashoffset: 0; }
 .fpsplash .go .gl { animation: fpsplash-draw 0.6s cubic-bezier(0.6, 0, 0.2, 1) var(--d, 0s) both; }
 
 .fpsplash .bf { fill: var(--fill); }
@@ -495,7 +502,7 @@ export default function Splash({ children }: { children: ReactNode }) {
 .fpsplash .go .bf { animation: fpsplash-fade 0.6s ease-out var(--d, 0s) both; }
 .fpsplash .go .ol { animation: fpsplash-draw var(--dur, 1.1s) cubic-bezier(0.6, 0, 0.2, 1) var(--d, 0s) both; }
 .fpsplash .go .mk { animation: fpsplash-pop 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) var(--d, 0s) both; }
-.fpsplash .hol { fill: none; stroke: var(--mark); stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linejoin: miter; stroke-miterlimit: 8; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.fpsplash .hol { fill: none; stroke: var(--mark); stroke-width: var(--ow, 1.6px); vector-effect: non-scaling-stroke; stroke-linejoin: miter; stroke-miterlimit: 8; opacity: 0; transform-box: fill-box; transform-origin: center; }
 .fpsplash .go .hol { animation: fpsplash-pop 0.6s cubic-bezier(0.2, 1.5, 0.4, 1) var(--d, 0s) both; }
 .fpsplash .go .ring { animation: fpsplash-ripple 1.9s cubic-bezier(0.15, 0.6, 0.25, 1) var(--d, 0s) forwards; }
 @keyframes fpsplash-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
