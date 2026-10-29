@@ -5,7 +5,7 @@
  * 1px lines at reduced strength, which reads the same at screen
  * resolution. It sits on a layer fixed to the window, so the paper stays
  * still while the poster and text scroll over it (background-attachment:
- * fixed is ignored on iOS). The mobile header reuses it (see SiteHeader), so
+ * fixed is ignored on iOS). The About header reuses it (see SiteHeader), so
  * the paper runs on unbroken behind the header.
  */
 function gridBackground(alpha: number, size: string, position: string) {
