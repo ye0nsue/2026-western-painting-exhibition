@@ -1,7 +1,7 @@
 "use client";
 
 import { Inter, Noto_Sans_KR } from "next/font/google";
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { preload } from "react-dom";
 
 const inter = Inter({
@@ -33,8 +33,14 @@ function d(value: string): CSSProperties {
  * prototype — the drawing/transition math (coordinates, timings) is
  * intentionally left as-is to match the original design exactly.
  */
+// Set once the visitor has entered the site. Module state, so it lasts across
+// client-side navigations (e.g. tapping the logo to come back home) but
+// resets on a full reload, which plays the intro again.
+let hasEntered = false;
+
 export default function Splash({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [skipIntro] = useState(() => hasEntered);
   // Start downloading the intro photo with the response (React sends it as
   // an early Link header) instead of after hydration, when the effect below
   // first sets photo.src.
@@ -43,6 +49,13 @@ export default function Splash({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
+    // Navigating away keeps this page alive but hidden, and coming back
+    // re-runs this effect on the same, already-entered splash. Keep it
+    // stepped aside instead of restarting the intro.
+    if (hasEntered) {
+      root.classList.add("revealed", "entered");
+      return;
+    }
 
     const $ = <T extends Element>(s: string) => root!.querySelector(s) as T;
     const NS = "http://www.w3.org/2000/svg";
@@ -357,7 +370,7 @@ export default function Splash({ children }: { children: ReactNode }) {
     }
     function endTrans(showFinal: boolean) {
       cancelAnimationFrame(tRaf); inTrans = false; trans.style.display = "none";
-      if (showFinal) showMain(true);
+      if (showFinal) { showMain(true); hasEntered = true; }
       // Keep the page under the overlay pinned to the top until the reveal
       // has fully settled, then hand scrolling back to it.
       root!.classList.toggle("entered", showFinal);
@@ -483,6 +496,10 @@ export default function Splash({ children }: { children: ReactNode }) {
       window.removeEventListener("resize", onResize);
     };
   }, []);
+
+  // Coming back to the home page within the same visit: go straight to it.
+  // (The effect above bails out too, since rootRef never attaches.)
+  if (skipIntro) return <>{children}</>;
 
   return (
     <>

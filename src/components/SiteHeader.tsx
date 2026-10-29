@@ -226,6 +226,14 @@ export default function SiteHeader() {
       <div className="relative aspect-[390/64] w-full overflow-hidden min-[695px]:aspect-[1440/64]">
         <Link
           href="/"
+          onClick={() => {
+            // The logo always lands on the plain main screen: close the
+            // mobile menu / search, and on the home page itself (where the
+            // link doesn't navigate) go back to the top.
+            setMenuOpenPath(null);
+            setSearchOpenPath(null);
+            if (isHome) window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           className="absolute left-[8.205%] top-1/2 h-[21.54%] w-[21.385%] -translate-y-1/2 min-[695px]:left-[12.05%] min-[695px]:h-[30.48%] min-[695px]:w-[8.19%]"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
