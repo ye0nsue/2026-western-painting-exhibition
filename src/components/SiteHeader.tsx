@@ -3,7 +3,8 @@
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import MobileSearch from "./MobileSearch";
 
 // Header type is Inter Medium, like the footer: the inherited body font
 // (Arial) has no medium weight, so "font-medium" used to render as regular.
@@ -114,11 +115,13 @@ function MobileMenu({
   isOpen,
   onToggle,
   onClose,
+  onSearch,
   onDark,
 }: {
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
+  onSearch: () => void;
   onDark: boolean;
 }) {
   const inkClass = onDark ? "bg-white" : "bg-[#1b191a]";
@@ -133,9 +136,9 @@ function MobileMenu({
     <span key="open-studio" className="cursor-default whitespace-nowrap">
       Open Studio
     </span>,
-    <span key="search" className="cursor-default">
+    <button key="search" type="button" onClick={onSearch} className="hover:opacity-60">
       Search
-    </span>,
+    </button>,
   ];
 
   return (
@@ -207,9 +210,13 @@ function MobileMenu({
 export default function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  // Remember which route the menu was opened on, so navigating closes it.
+  // Remember which route the menu / search screen was opened on, so
+  // navigating closes them.
   const [menuOpenPath, setMenuOpenPath] = useState<string | null>(null);
+  const [searchOpenPath, setSearchOpenPath] = useState<string | null>(null);
   const isMenuOpen = menuOpenPath === pathname;
+  const isSearchOpen = searchOpenPath === pathname;
+  const closeSearch = useCallback(() => setSearchOpenPath(null), []);
   // Mobile logo is white over the home map, ink elsewhere and while the menu
   // is open; both are stacked so the swap crossfades.
   const showWhiteLogo = isHome && !isMenuOpen;
@@ -247,10 +254,19 @@ export default function SiteHeader() {
         </div>
         <MobileMenu
           isOpen={isMenuOpen}
-          onToggle={() => setMenuOpenPath(isMenuOpen ? null : pathname)}
+          onToggle={() => {
+            // From the search screen, ☰ goes back to the menu.
+            setSearchOpenPath(null);
+            setMenuOpenPath(isMenuOpen ? null : pathname);
+          }}
           onClose={() => setMenuOpenPath(null)}
+          onSearch={() => {
+            setMenuOpenPath(null);
+            setSearchOpenPath(pathname);
+          }}
           onDark={isHome}
         />
+        <MobileSearch isOpen={isSearchOpen} onClose={closeSearch} />
       </div>
     </header>
   );

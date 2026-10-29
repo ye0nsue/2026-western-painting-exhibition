@@ -14,6 +14,48 @@ export const exhibitionInfo = {
   },
 };
 
+/**
+ * Exhibiting students, in the order the Figma search screen lists them.
+ * `studentId` is set only where it's needed to tell two students with the
+ * same name apart (shown under the name).
+ */
+export type Student = { name: string; studentId?: string };
+
+export const students: Student[] = [
+  { name: "곽신영" },
+  { name: "구아림" },
+  { name: "권민진" },
+  { name: "김가영" },
+  { name: "김서영" },
+  { name: "김서정" },
+  { name: "김세원" },
+  { name: "김유진" },
+  { name: "김은수" },
+  { name: "김채은" },
+  { name: "나윤서" },
+  { name: "박세린" },
+  { name: "박예지" },
+  { name: "오정현" },
+  { name: "오주한" },
+  { name: "윤정현" },
+  { name: "이서진" },
+  { name: "이지윤" },
+  { name: "이채원", studentId: "20222034" },
+  { name: "이채원", studentId: "20232014" },
+  { name: "임가은" },
+  { name: "임세연" },
+  { name: "장연수" },
+  { name: "전윤하" },
+  { name: "정민재" },
+  { name: "정세진" },
+  { name: "차수연" },
+  { name: "최유진" },
+  { name: "최하영" },
+  { name: "하설빈" },
+  { name: "한수연" },
+  { name: "한채연" },
+];
+
 export type Artist = {
   slug: string;
   name: string;
