@@ -1,0 +1,43 @@
+/* Page-to-page "fade through" (PageTransition): the whole old screen,
+   header included, fades out to the white page, then the new one fades in.
+   No overlap, so the two pages never show through each other. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(root),
+::view-transition-old(.page),
+::view-transition-old(site-header) {
+  animation: 220ms ease-in both page-fade-out;
+}
+::view-transition-new(root),
+::view-transition-new(.page),
+::view-transition-new(site-header) {
+  animation: 320ms ease-out 220ms both page-fade-in;
+}
+::view-transition-group(root),
+::view-transition-group(.page),
+::view-transition-group(site-header) {
+  animation: none;
+}
+/* Keep the header layer above the page layers, as it is on the live page. */
+::view-transition-group(site-header) {
+  z-index: 100;
+}
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
