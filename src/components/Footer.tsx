@@ -71,7 +71,7 @@ export default function Footer() {
           rel="noopener noreferrer"
           className={`absolute ${CONTACT_LEFT} ${CONTACT_TEXT} top-[15.24%] whitespace-nowrap min-[695px]:top-[26.5%] ${LINK_CLASS}`}
         >
-          서울특별시 성북구 보문로34다길 2 / 수정관 1F | 난향관 4F | 조형 1관 1F
+          서울특별시 성북구 보문로34다길 2 / 수정관 1F | 난향관 4F | 조형 1관 1F, 6F
         </a>
         <p className={`absolute ${CONTACT_LEFT} ${CONTACT_TEXT} top-[21.44%] whitespace-nowrap min-[695px]:top-[39%]`}>
           서양화과 과사무실.{" "}
