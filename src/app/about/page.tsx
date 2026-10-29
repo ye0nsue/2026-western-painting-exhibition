@@ -1,5 +1,6 @@
 import { Inter, Noto_Sans_KR } from "next/font/google";
 import { students } from "@/lib/exhibition";
+import { ABOUT_DESKTOP_GRID as DESKTOP_GRID, ABOUT_MOBILE_GRID as MOBILE_GRID } from "@/lib/aboutGrid";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,36 +36,21 @@ const CREDITS: [role: string, people: string][] = [
 const FLUX_POINT_MARK = "「 Flux Point 」";
 
 /**
- * Graph paper from the Figma About frame: 26.735 x 26px cells (of 1440)
- * outlined in final-red at a hairline 0.145px. Drawn as 1px lines at
- * reduced strength, which reads the same at screen resolution. It sits on a
- * layer fixed to the window, so the paper stays still while the poster and
- * text scroll over it (background-attachment: fixed is ignored on iOS).
- */
-const GRID_BACKGROUND = {
-  backgroundImage: [
-    "linear-gradient(to right, color-mix(in srgb, var(--color-final-red) 35%, transparent) 1px, transparent 1px)",
-    "linear-gradient(to bottom, color-mix(in srgb, var(--color-final-red) 35%, transparent) 1px, transparent 1px)",
-  ].join(", "),
-  backgroundSize: "1.8566vw 1.8056vw",
-  backgroundPosition: "-0.035vw 0",
-};
-
-/**
- * About page from the Figma "About" frame (1440x3636). From 695px it's the
+ * About page from the Figma "About" frames. From 695px it's the 1440x3636
  * desktop layout scaled to the window width, like the rest of the site:
  * the poster on the left (sticky while you scroll) and a 585px text
  * column on the right (title, Korean and English statements, credits),
  * scrolling over still graph paper that shows through the transparent
- * header. Below 695px there is no Figma design yet,
- * so it stacks the same content at readable fixed sizes.
+ * header. Below 695px it's the 390x2647 mobile frame: poster on top, then
+ * the same column scaled to 325.6px (0.5566x) with 12 / 11 / 8.9px type.
  */
 export default function AboutPage() {
   return (
     <div
-      className={`${inter.variable} ${notoSansKr.variable} relative isolate -mt-[16.41vw] w-full pb-16 pt-[calc(16.41vw+24px)] font-[family-name:var(--font-about-inter),var(--font-about-noto-kr)] text-[#1b191a] min-[695px]:-mt-[4.444vw] min-[695px]:min-h-[238.61vw] min-[695px]:pb-[6vw] min-[695px]:pt-[7.639vw]`}
+      className={`${inter.variable} ${notoSansKr.variable} relative isolate -mt-[16.41vw] min-h-[610vw] w-full pb-[14.134vw] pt-[16.436vw] font-[family-name:var(--font-about-inter),var(--font-about-noto-kr)] text-[#1b191a] min-[695px]:-mt-[4.444vw] min-[695px]:min-h-[238.61vw] min-[695px]:pb-[6vw] min-[695px]:pt-[7.639vw]`}
     >
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10" style={GRID_BACKGROUND} />
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 min-[695px]:hidden" style={MOBILE_GRID} />
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 hidden min-[695px]:block" style={DESKTOP_GRID} />
       {/*
         Desktop: the poster is sticky, like kookminfinearts.com's About page.
         It holds its Figma spot (117px from the top of the window) while the
@@ -76,12 +62,12 @@ export default function AboutPage() {
         <img
           alt="Flux Point 2026 성신여자대학교 서양화과 졸업전시 포스터"
           src={POSTER_SRC}
-          className="mx-auto block aspect-[441.43/624.15] w-[calc(100%-40px)] object-cover min-[695px]:sticky min-[695px]:top-[8.125vw] min-[695px]:w-full"
+          className="mx-auto block aspect-[441.43/624.15] w-[83.483vw] object-cover min-[695px]:sticky min-[695px]:top-[8.125vw] min-[695px]:w-full"
         />
       </div>
 
-      <div className="mx-5 mt-8 min-[695px]:mx-0 min-[695px]:ml-[48.472vw] min-[695px]:mt-0 min-[695px]:w-[40.625vw]">
-        <p className="p-0 text-[17px] leading-[1.8] font-bold text-justify min-[695px]:p-[0.694vw] min-[695px]:text-[1.389vw]">
+      <div className="ml-[8.258vw] mt-[5.523vw] w-[83.483vw] min-[695px]:ml-[48.472vw] min-[695px]:mt-0 min-[695px]:w-[40.625vw]">
+        <p className="p-[1.427vw] text-[3.077vw] leading-[1.8] font-bold text-justify min-[695px]:p-[0.694vw] min-[695px]:text-[1.389vw]">
           <span className="text-final-red">⟪Flux Point⟫</span>
           <br />
           2026.12.01.-12.06.
@@ -91,10 +77,10 @@ export default function AboutPage() {
           수정관 1F 가온갤러리 | 난향관 4F 파이룸 | 조형 1관 1F S101
         </p>
 
-        <div className="mt-8 flex flex-col gap-6 text-[15px] leading-[1.8] font-medium text-justify min-[695px]:mt-[2.986vw] min-[695px]:gap-[0.833vw] min-[695px]:text-[1.389vw]">
-          {/* Figma block heights (776 / 1208px) as minimums keep the credits at their Figma y when the
-              browser's Korean font sets the text a little tighter than Figma does. */}
-          <div className="min-[695px]:min-h-[53.889vw] min-[695px]:p-[0.694vw]">
+        <div className="mt-[6.137vw] flex flex-col gap-[1.713vw] text-[2.821vw] leading-[1.8] font-medium text-justify min-[695px]:mt-[2.986vw] min-[695px]:gap-[0.833vw] min-[695px]:text-[1.389vw]">
+          {/* Figma block heights as minimums keep the credits at their Figma y when the browser's
+              Korean font sets the text a little tighter than Figma does. */}
+          <div className="min-h-[110.546vw] p-[1.427vw] min-[695px]:min-h-[53.889vw] min-[695px]:p-[0.694vw]">
             <p>
               시공간의 무수한 흐름 속에서 마주한 개개인의 좌표들은 서로의 궤적을 공유하며 하나의 유동적 흐름,
               플럭스(Flux)를 형성한다. 올해로 63년의 연혁을 맞이한 성신여자대학교 미술대학의 역사는 이 자리에서 수많은
@@ -119,7 +105,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div lang="en" className="min-[695px]:min-h-[83.889vw] min-[695px]:p-[0.694vw]">
+          <div lang="en" className="min-h-[166.957vw] p-[1.427vw] min-[695px]:min-h-[83.889vw] min-[695px]:p-[0.694vw]">
             <p>
               Amid the countless flows of space and time, the coordinates of individuals who encounter one another share
               their trajectories and form a single fluid flow, Flux. The history of Sungshin Women&apos;s University College
@@ -149,12 +135,12 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Credits: 200px label column, value up to the column's edge; rows 16px apart. */}
-        <dl className="mt-10 flex flex-col gap-3 text-[14px] leading-[1.8] font-semibold text-black min-[695px]:mt-[2.986vw] min-[695px]:gap-[1.111vw] min-[695px]:text-[1.111vw]">
+        {/* Credits: 200px label column (111.3 on mobile), value up to the column's edge; rows 16px (9px) apart. */}
+        <dl className="mt-[6.137vw] flex flex-col gap-[2.32vw] text-[2.283vw] leading-[1.8] font-semibold text-black min-[695px]:mt-[2.986vw] min-[695px]:gap-[1.111vw] min-[695px]:text-[1.111vw]">
           {CREDITS.map(([role, people]) => (
             <div key={role} className="flex">
-              <dt className="w-[108px] shrink-0 min-[695px]:w-[13.889vw] min-[695px]:p-[0.694vw]">{role}</dt>
-              <dd className="min-w-0 flex-1 text-justify min-[695px]:max-w-[26.731vw] min-[695px]:flex-none min-[695px]:p-[0.694vw]">
+              <dt className="w-[28.541vw] shrink-0 p-[1.427vw] min-[695px]:w-[13.889vw] min-[695px]:p-[0.694vw]">{role}</dt>
+              <dd className="max-w-[54.933vw] p-[1.427vw] text-justify min-[695px]:max-w-[26.731vw] min-[695px]:p-[0.694vw]">
                 {people}
               </dd>
             </div>

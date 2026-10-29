@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useState } from "react";
+import { ABOUT_MOBILE_GRID } from "@/lib/aboutGrid";
 import MobileSearch from "./MobileSearch";
 
 // Header type is Inter Medium, like the footer: the inherited body font
@@ -223,6 +224,16 @@ export default function SiteHeader() {
 
   return (
     <header className={`${inter.className} sticky top-0 z-50 w-full bg-transparent`}>
+      {pathname === "/about" && (
+        // Mobile About scrolls a long text column under the header: back the
+        // header with the same white graph paper (fixed grid and sticky header
+        // both start at the window's top, so the lines line up) to hide it.
+        <div
+          aria-hidden
+          className="absolute inset-0 min-[695px]:hidden"
+          style={{ ...ABOUT_MOBILE_GRID, backgroundColor: "white" }}
+        />
+      )}
       <div className="relative aspect-[390/64] w-full overflow-hidden min-[695px]:aspect-[1440/64]">
         <Link
           href="/"
