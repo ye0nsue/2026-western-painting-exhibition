@@ -1,3 +1,5 @@
+import { preload } from "react-dom";
+
 /**
  * Red-toned aerial photo of the campus. Positioned exactly as the Figma
  * "배경 1" layer, so a replacement should keep the same 3402x2006 framing
@@ -14,6 +16,10 @@ const BUILDING_PAIROOM_MOBILE_SRC = "/images/main/building-2-square-mobile.svg";
 const BUILDING_GAON_MOBILE_SRC = "/images/main/building-3-circle-mobile.svg";
 
 export default function MainHero() {
+  // Fetch the map while the splash intro plays, so it's usually in hand
+  // before the visitor taps through (the splash also waits for it).
+  preload(BG_MAP_SRC, { as: "image", fetchPriority: "low" });
+
   return (
     // The hero is a whole Figma frame: it slides up under the transparent
     // sticky header so the map isn't cut off along the header's bottom edge,

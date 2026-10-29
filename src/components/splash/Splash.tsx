@@ -2,6 +2,7 @@
 
 import { Inter, Noto_Sans_KR } from "next/font/google";
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { preload } from "react-dom";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,6 +16,9 @@ const notoSansKr = Noto_Sans_KR({
 });
 
 const INTRO_PHOTO_SRC = "/images/splash/intro-photo.webp";
+// Longest the enter transition holds on full red waiting for the page's
+// images before revealing anyway.
+const PAGE_IMAGES_MAX_WAIT_MS = 6000;
 
 function d(value: string): CSSProperties {
   return { "--d": value } as CSSProperties;
@@ -31,6 +35,10 @@ function d(value: string): CSSProperties {
  */
 export default function Splash({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  // Start downloading the intro photo with the response (React sends it as
+  // an early Link header) instead of after hydration, when the effect below
+  // first sets photo.src.
+  preload(INTRO_PHOTO_SRC, { as: "image", fetchPriority: "high" });
 
   useEffect(() => {
     const root = rootRef.current;
@@ -365,6 +373,16 @@ export default function Splash({ children }: { children: ReactNode }) {
       const mD = Math.max(Math.hypot(ox0, oy0), Math.hypot(tw - ox0, oy0), Math.hypot(ox0, th - oy0), Math.hypot(tw - ox0, th - oy0)), bd = mD * 0.3;
       const T1 = 1100, HOLD = 120, T2 = 1500;
       let swapped = false, t0 = 0;
+      // The page underneath (e.g. the hero's 1.7MB map) may still be
+      // downloading on a slow connection; keep the screen full red past
+      // HOLD until its images are ready, so the dots never clear onto a
+      // blank page.
+      let pageReady = false;
+      const pageImages = Array.from(document.images).filter((img) => !root!.contains(img) && !img.complete);
+      Promise.race([
+        Promise.all(pageImages.map((img) => img.decode().catch(() => {}))),
+        new Promise((resolve) => setTimeout(resolve, PAGE_IMAGES_MAX_WAIT_MS)),
+      ]).then(() => { pageReady = true; });
       function ease(p: number) { return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; }
       function frame(rad: (x: number, y: number) => number) {
         tctx.clearRect(0, 0, tw, th);
@@ -383,9 +401,12 @@ export default function Splash({ children }: { children: ReactNode }) {
         if (t < T1) {
           const R = ease(t / T1) * (mD + bd * 1.3);
           frame((x, y) => Math.min(1, Math.max(0, (R - Math.hypot(x - ox0, y - oy0)) / bd - hash(Math.round(x / Sz), Math.round(y / Sz)) * 0.3)));
-        } else if (t < T1 + HOLD) {
+        } else if (t < T1 + HOLD || !pageReady) {
           if (!swapped) { showMain(true); swapped = true; }
           tctx.clearRect(0, 0, tw, th); tctx.fillStyle = PHOTO_RED; tctx.fillRect(0, 0, tw, th);
+          // Still waiting: pin the clock at the end of HOLD so the reveal
+          // starts from its beginning once the images land.
+          if (t >= T1 + HOLD) t0 = now - (T1 + HOLD);
         } else if (t < T1 + HOLD + T2) {
           if (!swapped) { showMain(true); swapped = true; }
           const R2 = ease((t - T1 - HOLD) / T2) * (mD + bd * 1.3);
@@ -437,10 +458,18 @@ export default function Splash({ children }: { children: ReactNode }) {
     function go() {
       if (!started && !cancelled) { started = true; start(); }
     }
-    const ready: Promise<unknown>[] = [photo.decode ? photo.decode().catch(() => {}) : Promise.resolve()];
-    if (document.fonts && document.fonts.ready) ready.push(document.fonts.ready);
-    Promise.all(ready).then(go);
-    const fallback = setTimeout(go, 1500);
+    // The intro needs the photo: the halftone mask is cut from it when the
+    // animation starts, and it fades in at 7.4s. So wait for it however long
+    // it takes (the stage stays blank until then); only the font wait has a
+    // timeout. If the photo fails outright, hide it so browsers don't draw a
+    // broken-image "?" and run the intro without it.
+    let fallback: ReturnType<typeof setTimeout> | undefined;
+    const photoReady = photo.decode().catch(() => { photo.style.visibility = "hidden"; });
+    const fontsReady = new Promise<void>((resolve) => {
+      fallback = setTimeout(resolve, 1500);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => resolve());
+    });
+    Promise.all([photoReady, fontsReady]).then(go);
 
     return () => {
       cancelled = true;
