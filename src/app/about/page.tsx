@@ -24,20 +24,22 @@ const CREDITS: [role: string, people: string][] = [
   ["교수진", "박영근, 조병왕, 임상빈, 김정연"],
   ["졸업전시준비 총감독", "조병왕"],
   ["졸업전시준비위원장", "임가은"],
-  ["기획", "정세진, 차수연"],
+  ["기획", "차수연, 정세진"],
   ["편집", "구아림, 최하영"],
   ["재무", "박예지"],
   ["홍보", "구아림, 박예지"],
-  ["디자인", "김규빈 디자이너, 구아림, 정세진, 최하영"],
+  ["디자인", "김규빈 디자이너, 정세진, 최하영, 구아림"],
   ["웹사이트 디자인, 개발", "장연수"],
   ["촬영 및 인쇄", "제이앤 컴퍼니"],
   ["협찬", "ㅇㅇㅇ"],
 ];
 
+const VENUES = ["수정관 1F 가온갤러리", "난향관 4F 파이룸", "조형 1관 1F S101, 6F 601호・606호"];
+
 const FLUX_POINT_MARK = "「 Flux Point 」";
 
 /**
- * About page from the Figma "About" frames. From 695px it's the 1440x3636
+ * About page from the Figma "About" frames. From 695px it's the 1440x3632
  * desktop layout scaled to the window width, like the rest of the site:
  * the poster on the left (sticky while you scroll) and a 585px text
  * column on the right (title, Korean and English statements, credits),
@@ -49,7 +51,7 @@ export default function AboutPage() {
   return (
     <PageTransition>
       <div
-        className={`${inter.variable} ${notoSansKr.variable} relative isolate -mt-[16.41vw] min-h-[610vw] w-full pb-[14.134vw] pt-[16.436vw] font-[family-name:var(--font-about-inter),var(--font-about-noto-kr)] text-[#1b191a] min-[695px]:-mt-[4.444vw] min-[695px]:min-h-[238.61vw] min-[695px]:pb-[6vw] min-[695px]:pt-[7.639vw]`}
+        className={`${inter.variable} ${notoSansKr.variable} relative isolate -mt-[16.41vw] min-h-[610vw] w-full pb-[14.134vw] pt-[16.436vw] font-[family-name:var(--font-about-inter),var(--font-about-noto-kr)] text-[#1b191a] min-[695px]:-mt-[4.444vw] min-[695px]:min-h-[238.333vw] min-[695px]:pb-[4.514vw] min-[695px]:pt-[7.639vw]`}
       >
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 min-[695px]:hidden" style={MOBILE_GRID} />
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 hidden min-[695px]:block" style={DESKTOP_GRID} />
@@ -59,7 +61,7 @@ export default function AboutPage() {
           text scrolls past, until the end of its track (the bottom of the text
           column), where it scrolls away with the page.
         */}
-        <div className="min-[695px]:absolute min-[695px]:bottom-[6vw] min-[695px]:left-[12.033vw] min-[695px]:top-[8.125vw] min-[695px]:w-[30.655vw]">
+        <div className="min-[695px]:absolute min-[695px]:bottom-[4.514vw] min-[695px]:left-[12.033vw] min-[695px]:top-[8.125vw] min-[695px]:w-[30.655vw]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt="Flux Point 2026 성신여자대학교 서양화과 졸업전시 포스터"
@@ -69,17 +71,19 @@ export default function AboutPage() {
         </div>
 
         <div className="ml-[8.258vw] mt-[5.523vw] w-[83.483vw] min-[695px]:ml-[48.472vw] min-[695px]:mt-0 min-[695px]:w-[40.625vw]">
-          <p className="p-[1.427vw] text-[3.077vw] leading-[1.8] font-bold text-justify min-[695px]:p-[0.694vw] min-[695px]:text-[1.389vw]">
-            <span className="text-final-red">⟪Flux Point⟫</span>
-            <br />
-            2026.12.01.-12.06.
-            <br />
-            서울특별시 성북구 보문로34다길 2
-            <br />
-            수정관 1F 가온갤러리 | 난향관 4F 파이룸 | 조형 1관 1F S101
-          </p>
+          <div className="p-[1.427vw] text-[3.077vw] leading-[1.8] font-semibold min-[695px]:p-[0.694vw] min-[695px]:text-[1.389vw]">
+            <p className="text-[3.385vw] font-bold text-final-red min-[695px]:text-[1.528vw]">⟪Flux Point⟫</p>
+            <p>2026.12.01.-12.06.</p>
+            <p>서울특별시 성북구 보문로34다길 2</p>
+            {VENUES.map((venue) => (
+              <p key={venue}>
+                <span className="text-final-red">| </span>
+                {venue}
+              </p>
+            ))}
+          </div>
 
-          <div className="mt-[6.137vw] flex flex-col gap-[1.713vw] text-[2.821vw] leading-[1.8] font-medium text-justify min-[695px]:mt-[2.986vw] min-[695px]:gap-[0.833vw] min-[695px]:text-[1.389vw]">
+          <div className="mt-[6.137vw] flex flex-col gap-[1.713vw] text-[2.821vw] leading-[1.8] font-medium text-justify min-[695px]:mt-[1.667vw] min-[695px]:gap-[0.833vw] min-[695px]:text-[1.389vw]">
             {/* Figma block heights as minimums keep the credits at their Figma y when the browser's
                 Korean font sets the text a little tighter than Figma does. */}
             <div className="min-h-[110.546vw] p-[1.427vw] min-[695px]:min-h-[53.889vw] min-[695px]:p-[0.694vw]">
@@ -138,7 +142,7 @@ export default function AboutPage() {
           </div>
 
           {/* Credits: 200px label column (111.3 on mobile), value up to the column's edge; rows 16px (9px) apart. */}
-          <dl className="mt-[6.137vw] flex flex-col gap-[2.32vw] text-[2.283vw] leading-[1.8] font-semibold text-black min-[695px]:mt-[2.986vw] min-[695px]:gap-[1.111vw] min-[695px]:text-[1.111vw]">
+          <dl className="mt-[6.137vw] flex flex-col gap-[2.32vw] text-[2.283vw] leading-[1.8] font-semibold text-black min-[695px]:mt-[1.667vw] min-[695px]:gap-[1.111vw] min-[695px]:text-[1.111vw]">
             {CREDITS.map(([role, people]) => (
               <div key={role} className="flex">
                 <dt className="w-[28.541vw] shrink-0 p-[1.427vw] min-[695px]:w-[13.889vw] min-[695px]:p-[0.694vw]">{role}</dt>
