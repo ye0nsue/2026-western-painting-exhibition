@@ -257,7 +257,8 @@ export default function SiteHeader() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Flux Point" className="hidden h-full w-full min-[695px]:block" src={LOGO_SRC} />
         </Link>
-        <div className="absolute inset-0 hidden min-[695px]:block">
+        {/* `contents`, not a box: a full-size wrapper would sit over the logo and swallow its clicks. */}
+        <div className="hidden min-[695px]:contents">
           <HeaderNav />
         </div>
         <MobileMenu

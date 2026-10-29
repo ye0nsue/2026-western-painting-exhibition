@@ -38,9 +38,20 @@ function d(value: string): CSSProperties {
 // resets on a full reload, which plays the intro again.
 let hasEntered = false;
 
+// Path of the page the browser actually loaded in this tab (not wherever
+// client-side navigation has since gone). Only defined in the browser.
+function openedAtPath() {
+  const [entry] = performance.getEntriesByType("navigation");
+  return entry ? new URL(entry.name).pathname : window.location.pathname;
+}
+
 export default function Splash({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [skipIntro] = useState(() => hasEntered);
+  // The intro only plays when the site is opened at the home page. Arriving
+  // here from another page (e.g. via the logo) goes straight to the site.
+  const [skipIntro] = useState(
+    () => hasEntered || (typeof window !== "undefined" && openedAtPath() !== "/"),
+  );
   // Start downloading the intro photo with the response (React sends it as
   // an early Link header) instead of after hydration, when the effect below
   // first sets photo.src.
