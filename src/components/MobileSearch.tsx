@@ -70,7 +70,7 @@ export default function MobileSearch({ isOpen, onClose }: { isOpen: boolean; onC
       />
       <div
         role="search"
-        className="fixed left-[8.205vw] top-[var(--header-h,16.41vw)] h-[189.49vw] max-h-[calc(100dvh-var(--header-h,16.41vw)-10.51vw)] w-[83.59vw] overflow-y-auto bg-white"
+        className="fixed left-[8.205vw] top-[var(--header-h,16.41vw)] h-[189.49vw] max-h-[calc(100dvh-26.92vw)] w-[83.59vw] overflow-hidden bg-white"
       >
         <label
           htmlFor="mobile-search-input"
@@ -94,20 +94,33 @@ export default function MobileSearch({ isOpen, onClose }: { isOpen: boolean; onC
   );
 }
 
-/** Every student, in the Figma 4-column grid shown before anything is typed. */
+/**
+ * Every student, in the Figma 4-column grid shown before anything is typed.
+ * It fills the panel below the search field and sits centered in it (as it
+ * does in the Figma frame), and the row gap shrinks from Figma's 32px when
+ * the panel is shorter (a small phone), so all 32 names always fit without
+ * scrolling. The panel's height is set by the screen alone: when the ☰ menu
+ * pushes it down, it keeps its size and runs off the bottom of the screen
+ * rather than squeezing the names.
+ */
 function StudentGrid() {
   return (
-    <ul className="grid auto-rows-[7.498vw] grid-cols-[repeat(4,12.951vw)] gap-x-[5.113vw] gap-y-[8.205vw] pb-[8.205vw] pl-[8.27vw] pt-[42.87vw] text-final-red">
-      {students.map((student) => (
-        <li
-          key={student.studentId ?? student.name}
-          className="flex flex-col items-center pt-[1.704vw] text-[3.408vw] leading-[normal] font-semibold whitespace-nowrap"
-        >
-          {student.name}
-          {student.studentId && <span className="mt-[0.682vw] text-[1.346vw] tracking-[0.323vw]">{student.studentId}</span>}
-        </li>
-      ))}
-    </ul>
+    <div
+      className="absolute inset-x-0 bottom-[4.1vw] top-[16.15vw] flex items-center justify-center"
+      style={{ containerType: "size" }}
+    >
+      <ul className="grid auto-rows-[7.498vw] grid-cols-[repeat(4,12.951vw)] gap-x-[5.113vw] gap-y-[clamp(0.5vw,calc((100cqh-8*7.498vw)/7),8.205vw)] text-final-red">
+        {students.map((student) => (
+          <li
+            key={student.studentId ?? student.name}
+            className="flex flex-col items-center pt-[1.704vw] text-[3.408vw] leading-[normal] font-semibold whitespace-nowrap"
+          >
+            {student.name}
+            {student.studentId && <span className="mt-[0.682vw] text-[1.346vw] tracking-[0.323vw]">{student.studentId}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
