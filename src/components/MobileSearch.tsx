@@ -2,51 +2,31 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { students, type Student } from "@/lib/exhibition";
+import { SEARCH_GRID_SRC, gridLine, matchStudents, resultStartRows } from "@/lib/searchResults";
 
-const SEARCH_GRID_SRC = "/images/main/search-grid.svg";
+// Same photo and mobile framing as the home hero (see MainHero).
+const BG_MAP_SRC = "/images/main/bg-red-map.webp";
 
-/**
- * y of the graph paper's i-th horizontal rule, in Figma px from the top of
- * the results area. Rules run 21.382px apart through i = 20, then 20.564px.
- */
-function gridLine(i: number) {
-  return i <= 20 ? 21.382 * (i + 1) - 24.12 : 445.47 + 20.564 * (i - 21);
-}
 const px = (figmaPx: number) => `${(figmaPx / 3.9).toFixed(3)}vw`;
 
 /**
- * Figma "연관 검색어 나타날 때" layout rule for results: every line of text
- * fills one row of the paper (its 1.6 line height ≈ the 21.38px rule
- * spacing), the first result starts on the second row, and one empty row
- * separates results. Returns each result's first row.
- */
-function resultStartRows(lineCounts: number[]) {
-  const starts: number[] = [];
-  let row = 1;
-  for (const lines of lineCounts) {
-    starts.push(row);
-    row += lines + 1;
-  }
-  return starts;
-}
-
-/**
- * Mobile (<695px) search screen. Empty, it's the Figma 390x844 "검색창 맨
- * 처음" frame: a white panel over the page with a search field and every
- * student name in a 4-column grid. Once something is typed it's "연관 검색어
+ * Mobile (<695px) search screen. Empty, it's the Figma 390x844 "모바일 검색
+ * 처음" frame — on every page, the whole frame: the home page's rotated red
+ * map fills the screen, the header turns white over it (see SiteHeader), and
+ * a white panel holds the search field and every student name in a 4-column
+ * grid. Once something is typed it's "연관 검색어
  * 나타날 때": the grid gives way to a sheet of graph paper under the field,
  * with the matching students (by name or student number) one per row.
  * Sizes are Figma px over 390, as vw.
  *
  * Opened from the mobile menu's Search item; tapping outside the panel or
- * pressing Escape closes it.
+ * pressing Escape closes it. The panel hangs from the header's live height
+ * (--header-h, set by SiteHeader), so opening ☰ here pushes it down.
  */
 export default function MobileSearch({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [query, setQuery] = useState("");
   const keyword = query.replace(/\s/g, "");
-  const matches = keyword
-    ? students.filter((s) => s.name.includes(keyword) || s.studentId?.includes(keyword))
-    : [];
+  const matches = matchStudents(query);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -71,21 +51,30 @@ export default function MobileSearch({ isOpen, onClose }: { isOpen: boolean; onC
         isOpen ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
     >
+      {/* The home page's mobile map, framed exactly as there, behind everything. */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden bg-white">
+        <div className="absolute inset-x-0 top-0 aspect-[390/844] overflow-hidden">
+          <div className="absolute left-1/2 top-1/2 h-[46.21%] w-[216.41%] -translate-x-1/2 -translate-y-1/2 -rotate-90 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img alt="" className="absolute left-[-2.84%] top-[-9.41%] h-[131.24%] w-[102.84%] max-w-none" src={BG_MAP_SRC} />
+          </div>
+        </div>
+      </div>
       {/* Tap-outside area: everything below the header around the panel. */}
       <button
         type="button"
         aria-label="검색 닫기"
         tabIndex={-1}
         onClick={onClose}
-        className="fixed inset-x-0 bottom-0 top-[16.41vw] cursor-default"
+        className="fixed inset-x-0 bottom-0 top-[var(--header-h,16.41vw)] cursor-default"
       />
       <div
         role="search"
-        className="fixed left-[8.31vw] top-[16.53vw] h-[189.49vw] max-h-[calc(100dvh-26.92vw)] w-[85.9vw] overflow-y-auto bg-white"
+        className="fixed left-[8.205vw] top-[var(--header-h,16.41vw)] h-[189.49vw] max-h-[calc(100dvh-var(--header-h,16.41vw)-10.51vw)] w-[83.59vw] overflow-y-auto bg-white"
       >
         <label
           htmlFor="mobile-search-input"
-          className="absolute left-[6.923vw] top-[7.179vw] text-[4.103vw] leading-[normal] font-medium text-final-red"
+          className="absolute left-[5.749vw] top-[7.3vw] text-[4.103vw] leading-[normal] font-medium text-final-red"
         >
           Search
         </label>
@@ -95,9 +84,9 @@ export default function MobileSearch({ isOpen, onClose }: { isOpen: boolean; onC
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="검색어를 입력해주세요."
-          className="absolute left-[22.31vw] top-[6.923vw] h-[5.897vw] w-[56.745vw] bg-transparent pl-[1.038vw] text-[3.59vw] leading-[normal] font-medium text-[#1b191a]/60 outline-none placeholder:text-[#1b191a]/60 [&::-webkit-search-cancel-button]:appearance-none"
+          className="absolute left-[21.133vw] top-[7.044vw] h-[5.897vw] w-[56.745vw] bg-transparent pl-[1.038vw] text-[3.59vw] leading-[normal] font-medium text-[#1b191a]/60 outline-none placeholder:text-[#1b191a]/60 [&::-webkit-search-cancel-button]:appearance-none"
         />
-        <span aria-hidden className="absolute left-[22.31vw] top-[12.82vw] h-px w-[56.745vw] bg-final-red" />
+        <span aria-hidden className="absolute left-[21.133vw] top-[12.941vw] h-px w-[56.745vw] bg-final-red" />
 
         {keyword ? <RelatedResults matches={matches} /> : <StudentGrid />}
       </div>
@@ -108,7 +97,7 @@ export default function MobileSearch({ isOpen, onClose }: { isOpen: boolean; onC
 /** Every student, in the Figma 4-column grid shown before anything is typed. */
 function StudentGrid() {
   return (
-    <ul className="grid auto-rows-[7.498vw] grid-cols-[repeat(4,12.951vw)] gap-x-[5.113vw] gap-y-[8.205vw] pb-[8.205vw] pl-[9.444vw] pt-[42.75vw] text-final-red">
+    <ul className="grid auto-rows-[7.498vw] grid-cols-[repeat(4,12.951vw)] gap-x-[5.113vw] gap-y-[8.205vw] pb-[8.205vw] pl-[8.27vw] pt-[42.87vw] text-final-red">
       {students.map((student) => (
         <li
           key={student.studentId ?? student.name}
@@ -144,7 +133,7 @@ function RelatedResults({ matches }: { matches: Student[] }) {
   const starts = resultStartRows(entries.map((entry) => entry.lines.length));
 
   return (
-    <div className="absolute left-[22.41vw] top-[16.15vw] h-[165.9vw] w-[56.67vw] overflow-hidden">
+    <div className="absolute left-[21.236vw] top-[16.15vw] h-[165.9vw] w-[56.67vw] overflow-hidden">
       <div
         aria-hidden
         className="absolute inset-[-3.73%_-19.95%_-5.89%_-0.45%] flex items-center justify-center"

@@ -3,8 +3,9 @@
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ABOUT_DESKTOP_GRID, ABOUT_MOBILE_GRID } from "@/lib/aboutGrid";
+import DesktopSearchResults from "./DesktopSearchResults";
 import MobileSearch from "./MobileSearch";
 
 // Header type is Inter Medium, like the footer: the inherited body font
@@ -30,7 +31,7 @@ const NAV_POSITION = {
 const NAV_ITEM_CLASS =
   "absolute top-[20.61%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a] transition-[left] duration-300 ease-out";
 
-function HeaderNav() {
+function HeaderNav({ query, onQueryChange }: { query: string; onQueryChange: (query: string) => void }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pos = isSearchOpen ? "open" : "closed";
 
@@ -66,14 +67,19 @@ function HeaderNav() {
             <input
               autoFocus
               type="search"
-              onBlur={() => setIsSearchOpen(false)}
-              className="absolute left-[27.59%] top-[21.05%] w-[68.97%] bg-transparent text-[1.042vw] font-medium text-final-red outline-none"
+              value={query}
+              onChange={(event) => onQueryChange(event.target.value)}
+              onBlur={() => {
+                setIsSearchOpen(false);
+                onQueryChange("");
+              }}
+              className="absolute left-[27.59%] top-[31.58%] w-[68.97%] bg-transparent text-[0.972vw] font-medium text-[#1b191a]/60 outline-none [&::-webkit-search-cancel-button]:appearance-none"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               alt=""
               aria-hidden
-              className="pointer-events-none absolute left-[26.82%] top-[78.95%] block h-px w-[68.97%]"
+              className="pointer-events-none absolute left-[26.82%] top-[89.47%] block h-px w-[68.97%]"
               src={SEARCH_UNDERLINE_SRC}
             />
           </label>
@@ -112,23 +118,20 @@ function mobileItemTransition(isOpen: boolean, delayMs: number) {
  * page with no panel. Figma draws the home page only — white ☰/▽/items over
  * the red map; on other (white) pages they switch to ink.
  */
-function MobileMenu({
+/** The mobile menu's items, dropping in one after another as it opens. */
+function MobileMenuList({
   isOpen,
-  onToggle,
   onClose,
   onSearch,
-  onDark,
+  className,
 }: {
   isOpen: boolean;
-  onToggle: () => void;
-  onClose: () => void;
+  onClose: (href: string) => void;
   onSearch: () => void;
-  onDark: boolean;
+  className: string;
 }) {
-  const inkClass = onDark ? "bg-white" : "bg-[#1b191a]";
-  const textClass = onDark ? "text-white" : "text-[#1b191a]";
   const items = [
-    <Link key="about" href="/about" onClick={onClose} className="hover:opacity-60">
+    <Link key="about" href="/about" onClick={() => onClose("/about")} className="hover:opacity-60">
       About
     </Link>,
     <span key="student" className="cursor-default">
@@ -143,6 +146,49 @@ function MobileMenu({
   ];
 
   return (
+    // Always mounted so it can animate out; `inert` keeps the closed list
+    // out of tab order and assistive tech.
+    <nav id="mobile-menu" inert={!isOpen} className={`${className} ${isOpen ? "" : "pointer-events-none"}`}>
+      {items.map((item, i) => (
+        <div
+          key={item.key}
+          className={`${MOBILE_MENU_ITEM_CLASS} motion-reduce:transition-none! ${
+            isOpen ? "translate-y-0 opacity-100" : "-translate-y-[2vw] opacity-0"
+          }`}
+          style={{
+            transition: mobileItemTransition(isOpen, (isOpen ? i : items.length - 1 - i) * MOBILE_ITEM_STAGGER_MS),
+          }}
+        >
+          {item}
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+/**
+ * The ☰/▽ button, plus — on the home page — the menu list itself, hanging
+ * over the map. Other pages show the list in the header's own expanding
+ * panel instead (see SiteHeader).
+ */
+function MobileMenu({
+  isOpen,
+  onToggle,
+  onClose,
+  onSearch,
+  onDark,
+  floatingList,
+}: {
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: (href: string) => void;
+  onSearch: () => void;
+  onDark: boolean;
+  floatingList: boolean;
+}) {
+  const inkClass = onDark ? "bg-white" : "bg-[#1b191a]";
+
+  return (
     <div className="min-[695px]:hidden">
       <button
         type="button"
@@ -150,7 +196,7 @@ function MobileMenu({
         aria-expanded={isOpen}
         aria-controls="mobile-menu"
         onClick={onToggle}
-        className="absolute left-[86.03%] top-0 h-full w-[11.28%]"
+        className="absolute left-[86.03%] top-0 z-10 h-full w-[11.28%]"
       >
         {/* ☰ and ▽ are stacked and crossfade, with a quarter turn between them. */}
         <span
@@ -176,34 +222,17 @@ function MobileMenu({
           />
         </span>
       </button>
-      {/*
-        Fixed, not absolute: the list hangs below the header's 64px band,
-        which clips its overflow. The header is sticky at top 0, so viewport
-        coordinates line up with the Figma frame. Always mounted so it can
-        animate out; `inert` keeps the closed list out of tab order and
-        assistive tech.
-      */}
-      <nav
-        id="mobile-menu"
-        inert={!isOpen}
-        className={`fixed left-[66.53vw] top-[12.17vw] flex w-[27.69vw] flex-col items-end ${textClass} ${
-          isOpen ? "" : "pointer-events-none"
-        }`}
-      >
-        {items.map((item, i) => (
-          <div
-            key={item.key}
-            className={`${MOBILE_MENU_ITEM_CLASS} motion-reduce:transition-none! ${
-              isOpen ? "translate-y-0 opacity-100" : "-translate-y-[2vw] opacity-0"
-            }`}
-            style={{
-              transition: mobileItemTransition(isOpen, (isOpen ? i : items.length - 1 - i) * MOBILE_ITEM_STAGGER_MS),
-            }}
-          >
-            {item}
-          </div>
-        ))}
-      </nav>
+      {floatingList && (
+        // Fixed, not absolute: the list hangs below the header's 64px band,
+        // which clips its overflow. The header is sticky at top 0, so
+        // viewport coordinates line up with the Figma frame.
+        <MobileMenuList
+          isOpen={isOpen}
+          onClose={onClose}
+          onSearch={onSearch}
+          className="fixed left-[66.53vw] top-[12.17vw] flex w-[27.69vw] flex-col items-end text-white"
+        />
+      )}
     </div>
   );
 }
@@ -217,13 +246,52 @@ export default function SiteHeader() {
   const [searchOpenPath, setSearchOpenPath] = useState<string | null>(null);
   const isMenuOpen = menuOpenPath === pathname;
   const isSearchOpen = searchOpenPath === pathname;
-  const closeSearch = useCallback(() => setSearchOpenPath(null), []);
+  // What's typed in the desktop header search; its results hang below the
+  // header over the page (DesktopSearchResults).
+  const [desktopQuery, setDesktopQuery] = useState("");
+  const closeSearch = useCallback(() => {
+    setSearchOpenPath(null);
+    setMenuOpenPath(null);
+  }, []);
+  // A menu link closes the menu and the search screen, even when it points
+  // at the page you're already on (where the link itself does nothing).
+  function followMenuLink(href: string) {
+    closeSearch();
+    if (href === pathname) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  // The menu opens as a panel that grows the header (pushing the page down)
+  // everywhere except over the home map — and also on the search screen,
+  // where it pushes the search panel down instead.
+  const menuInHeader = !isHome || isSearchOpen;
+
+  // Publish the header's live height (it grows while the menu panel opens)
+  // so the fixed search panel can sit right below it.
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const root = document.documentElement;
+    const observer = new ResizeObserver(() => root.style.setProperty("--header-h", `${header.offsetHeight}px`));
+    observer.observe(header);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--header-h");
+    };
+  }, []);
   // Mobile logo is white over the home map, ink elsewhere and while the menu
   // is open; both are stacked so the swap crossfades.
-  const showWhiteLogo = isHome && !isMenuOpen;
+  // The mobile search screen lays the red map over every page, so the
+  // header goes white there too.
+  const showWhiteLogo = (isHome && !isMenuOpen) || isSearchOpen;
 
   return (
-    <header className={`${inter.className} sticky top-0 z-50 w-full bg-transparent`}>
+    <header
+      ref={headerRef}
+      className={`${inter.className} sticky top-0 z-50 w-full bg-transparent`}
+      // Its own layer in page transitions, so it fades out and in with the
+      // page instead of being covered by the outgoing page's snapshot.
+      style={{ viewTransitionName: "site-header" }}
+    >
       {pathname === "/about" && (
         // About scrolls a long text column under the header: back the header
         // with the same white graph paper (fixed grid and sticky header both
@@ -252,7 +320,7 @@ export default function SiteHeader() {
             setSearchOpenPath(null);
             if (isHome) window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="absolute left-[8.205%] top-1/2 h-[21.54%] w-[21.385%] -translate-y-1/2 min-[695px]:left-[12.05%] min-[695px]:h-[30.48%] min-[695px]:w-[8.19%]"
+          className="absolute left-[8.205%] top-1/2 z-10 h-[21.54%] w-[21.385%] -translate-y-1/2 min-[695px]:left-[12.05%] min-[695px]:h-[30.48%] min-[695px]:w-[8.19%]"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -277,24 +345,48 @@ export default function SiteHeader() {
         </Link>
         {/* `contents`, not a box: a full-size wrapper would sit over the logo and swallow its clicks. */}
         <div className="hidden min-[695px]:contents">
-          <HeaderNav />
+          <HeaderNav query={desktopQuery} onQueryChange={setDesktopQuery} />
         </div>
         <MobileMenu
           isOpen={isMenuOpen}
-          onToggle={() => {
-            // From the search screen, ☰ goes back to the menu.
-            setSearchOpenPath(null);
-            setMenuOpenPath(isMenuOpen ? null : pathname);
-          }}
-          onClose={() => setMenuOpenPath(null)}
+          onToggle={() => setMenuOpenPath(isMenuOpen ? null : pathname)}
+          onClose={followMenuLink}
           onSearch={() => {
             setMenuOpenPath(null);
             setSearchOpenPath(pathname);
           }}
-          onDark={isHome}
+          onDark={isHome || isSearchOpen}
+          floatingList={!menuInHeader}
         />
         <MobileSearch isOpen={isSearchOpen} onClose={closeSearch} />
       </div>
+      <DesktopSearchResults query={desktopQuery} plain={pathname === "/about"} />
+      {menuInHeader && (
+        // Off the home map the menu would sit on top of the page's own text,
+        // so the header grows to hold it instead: an in-flow panel that opens
+        // from 0 height (pushing the page down) with the header's background —
+        // the About graph-paper backing above, plain white elsewhere, and the
+        // search screen's map (white text) while searching.
+        <div
+          className={`relative grid transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none min-[695px]:hidden ${
+            isMenuOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          } ${isSearchOpen || pathname === "/about" ? "" : "bg-white"}`}
+        >
+          <div className="relative min-h-0 overflow-hidden">
+            <MobileMenuList
+              isOpen={isMenuOpen}
+              onClose={followMenuLink}
+              onSearch={() => {
+                setMenuOpenPath(null);
+                setSearchOpenPath(pathname);
+              }}
+              className={`ml-[66.53vw] flex w-[27.69vw] flex-col items-end pb-[4.1vw] ${
+                isSearchOpen ? "text-white" : "text-[#1b191a]"
+              }`}
+            />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
