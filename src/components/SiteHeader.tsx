@@ -17,9 +17,8 @@ const LOGO_WHITE_SRC = "/images/main/logo-wordmark-white.svg";
 const MENU_CLOSE_ICON_SRC = "/images/main/menu-close-triangle.svg";
 const SEARCH_UNDERLINE_SRC = "/images/main/vector-1.svg";
 const LETTER_ICON_SRC = "/images/main/letter.svg";
-// Where the header's letter icon leads (another site, opened in a new tab).
-// Until it's set the icon shows but goes nowhere.
-const LETTER_URL = "";
+// The exhibition invitation, which the header's letter icon opens in a new tab.
+const LETTER_URL = "https://fluxpoint2026-invitation.vercel.app";
 
 /**
  * The header's four nav items reflow (not just the search box expanding in
@@ -130,10 +129,10 @@ function HeaderNav({
       {/* Figma's 28.8px "pepicons-pencil:letter" icon. It stays put while the
           search opens: the expanded box ends 46px before it. */}
       <a
-        href={LETTER_URL || undefined}
+        href={LETTER_URL}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="편지"
+        aria-label="초대장"
         className="absolute left-[90.104%] top-[33.25%] h-[45.02%] w-[2.001%] hover:opacity-60"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -201,10 +200,10 @@ function MobileMenuList({
     // to its 16px nav. Painted through a mask so it takes the items' color.
     <a
       key="letter"
-      href={LETTER_URL || undefined}
+      href={LETTER_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="편지"
+      aria-label="초대장"
       // One text line tall, so it sits under Search at the same step as the items above.
       className="flex h-[1lh] items-center hover:opacity-60"
     >
