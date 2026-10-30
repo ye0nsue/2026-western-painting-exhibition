@@ -23,9 +23,12 @@ const px = (figmaPx: number) => `${(figmaPx / 14.4).toFixed(3)}vw`;
 export default function DesktopSearchResults({
   query,
   plain,
+  instant,
 }: {
   query: string;
   plain: boolean;
+  /** Close without the collapse (the page is changing underneath). */
+  instant: boolean;
 }) {
   // Keep showing the last results while the band closes, so it doesn't empty
   // out before it has collapsed.
@@ -41,7 +44,9 @@ export default function DesktopSearchResults({
 
   return (
     <div
-      className={`absolute left-[73.638vw] top-full hidden w-[12.5vw] transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none min-[695px]:grid ${
+      className={`absolute left-[73.638vw] top-full hidden w-[12.5vw] min-[695px]:grid ${
+        instant ? "" : "transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none"
+      } ${
         isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
       }`}
     >

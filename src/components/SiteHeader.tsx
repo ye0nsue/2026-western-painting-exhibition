@@ -29,25 +29,65 @@ const NAV_POSITION = {
 } as const;
 
 const NAV_ITEM_CLASS =
-  "absolute top-[20.61%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a] transition-[left] duration-300 ease-out";
+  "absolute top-[20.61%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a]";
+const NAV_SLIDE_CLASS = "transition-[left] duration-300 ease-out";
 
-function HeaderNav({ query, onQueryChange }: { query: string; onQueryChange: (query: string) => void }) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+/**
+ * The desktop nav and search box. `instant` is set when the search was closed
+ * by moving to another page: the nav then snaps back with the page swap
+ * instead of sliding while the page transition plays.
+ */
+function HeaderNav({
+  isSearchOpen,
+  instant,
+  onOpenSearch,
+  onCloseSearch,
+  query,
+  onQueryChange,
+}: {
+  isSearchOpen: boolean;
+  instant: boolean;
+  onOpenSearch: () => void;
+  onCloseSearch: () => void;
+  query: string;
+  onQueryChange: (query: string) => void;
+}) {
   const pos = isSearchOpen ? "open" : "closed";
+  const slide = instant ? "" : NAV_SLIDE_CLASS;
+
+  // Pressing a link to another page would blur the search input, closing the
+  // search (About slides back out from under the pointer, so the click
+  // missed it) and animating the nav and results while the page transition
+  // starts. Keep the focus on the input instead; the search then closes with
+  // the page swap (see SiteHeader).
+  useEffect(() => {
+    if (!isSearchOpen) return;
+    function keepFocus(event: MouseEvent) {
+      if (event.button !== 0) return;
+      const link = (event.target as Element | null)?.closest?.("a[href]");
+      if (!(link instanceof HTMLAnchorElement)) return;
+      const url = new URL(link.href);
+      if (url.origin === window.location.origin && url.pathname !== window.location.pathname) {
+        event.preventDefault();
+      }
+    }
+    document.addEventListener("mousedown", keepFocus, true);
+    return () => document.removeEventListener("mousedown", keepFocus, true);
+  }, [isSearchOpen]);
 
   return (
     <>
-      <Link href="/about" className={`${NAV_ITEM_CLASS} ${NAV_POSITION.about[pos]} hover:opacity-60`}>
+      <Link href="/about" className={`${NAV_ITEM_CLASS} ${slide} ${NAV_POSITION.about[pos]} hover:opacity-60`}>
         About
       </Link>
-      <span className={`${NAV_ITEM_CLASS} ${NAV_POSITION.student[pos]} cursor-default`}>Student</span>
-      <span className={`${NAV_ITEM_CLASS} ${NAV_POSITION.openStudio[pos]} cursor-default`}>Open Studio</span>
+      <span className={`${NAV_ITEM_CLASS} ${slide} ${NAV_POSITION.student[pos]} cursor-default`}>Student</span>
+      <span className={`${NAV_ITEM_CLASS} ${slide} ${NAV_POSITION.openStudio[pos]} cursor-default`}>Open Studio</span>
 
       {!isSearchOpen ? (
         <button
           type="button"
-          onClick={() => setIsSearchOpen(true)}
-          className="absolute top-[20.31%] left-[81.51%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a] transition-[left] duration-300 ease-out hover:opacity-60"
+          onClick={onOpenSearch}
+          className="absolute top-[20.31%] left-[81.51%] whitespace-nowrap p-[0.694vw] text-[1.111vw] font-medium text-[#1b191a] hover:opacity-60"
         >
           Search
         </button>
@@ -69,10 +109,7 @@ function HeaderNav({ query, onQueryChange }: { query: string; onQueryChange: (qu
               type="search"
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
-              onBlur={() => {
-                setIsSearchOpen(false);
-                onQueryChange("");
-              }}
+              onBlur={onCloseSearch}
               className="absolute left-[27.59%] top-[31.58%] w-[68.97%] bg-transparent text-[0.972vw] font-medium text-[#1b191a]/60 outline-none [&::-webkit-search-cancel-button]:appearance-none"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -246,9 +283,22 @@ export default function SiteHeader() {
   const [searchOpenPath, setSearchOpenPath] = useState<string | null>(null);
   const isMenuOpen = menuOpenPath === pathname;
   const isSearchOpen = searchOpenPath === pathname;
-  // What's typed in the desktop header search; its results hang below the
-  // header over the page (DesktopSearchResults).
+  // The desktop header search and what's typed in it; its results hang below
+  // the header over the page (DesktopSearchResults).
+  const [isDesktopSearchOpen, setIsDesktopSearchOpen] = useState(false);
   const [desktopQuery, setDesktopQuery] = useState("");
+  // Set when moving to another page closed the desktop search, so it closes
+  // in the same render as the new page, without its slide/collapse motion.
+  const [desktopSearchInstant, setDesktopSearchInstant] = useState(false);
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    if (isDesktopSearchOpen || desktopQuery) {
+      setIsDesktopSearchOpen(false);
+      setDesktopQuery("");
+      setDesktopSearchInstant(true);
+    }
+  }
   const closeSearch = useCallback(() => {
     setSearchOpenPath(null);
     setMenuOpenPath(null);
@@ -345,7 +395,20 @@ export default function SiteHeader() {
         </Link>
         {/* `contents`, not a box: a full-size wrapper would sit over the logo and swallow its clicks. */}
         <div className="hidden min-[695px]:contents">
-          <HeaderNav query={desktopQuery} onQueryChange={setDesktopQuery} />
+          <HeaderNav
+            isSearchOpen={isDesktopSearchOpen}
+            instant={desktopSearchInstant}
+            onOpenSearch={() => {
+              setDesktopSearchInstant(false);
+              setIsDesktopSearchOpen(true);
+            }}
+            onCloseSearch={() => {
+              setIsDesktopSearchOpen(false);
+              setDesktopQuery("");
+            }}
+            query={desktopQuery}
+            onQueryChange={setDesktopQuery}
+          />
         </div>
         <MobileMenu
           isOpen={isMenuOpen}
@@ -360,7 +423,7 @@ export default function SiteHeader() {
         />
         <MobileSearch isOpen={isSearchOpen} onClose={closeSearch} />
       </div>
-      <DesktopSearchResults query={desktopQuery} plain={pathname === "/about"} />
+      <DesktopSearchResults query={desktopQuery} plain={pathname === "/about"} instant={desktopSearchInstant} />
       {menuInHeader && (
         // Off the home map the menu would sit on top of the page's own text,
         // so the header grows to hold it instead: an in-flow panel that opens
