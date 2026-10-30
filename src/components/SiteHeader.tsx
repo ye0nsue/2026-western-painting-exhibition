@@ -16,6 +16,10 @@ const LOGO_SRC = "/images/main/logo-wordmark.svg";
 const LOGO_WHITE_SRC = "/images/main/logo-wordmark-white.svg";
 const MENU_CLOSE_ICON_SRC = "/images/main/menu-close-triangle.svg";
 const SEARCH_UNDERLINE_SRC = "/images/main/vector-1.svg";
+const LETTER_ICON_SRC = "/images/main/letter.svg";
+// Where the header's letter icon leads (another site, opened in a new tab).
+// Until it's set the icon shows but goes nowhere.
+const LETTER_URL = "";
 
 /**
  * The header's four nav items reflow (not just the search box expanding in
@@ -122,6 +126,19 @@ function HeaderNav({
           </label>
         </form>
       )}
+
+      {/* Figma's 28.8px "pepicons-pencil:letter" icon. It stays put while the
+          search opens: the expanded box ends 46px before it. */}
+      <a
+        href={LETTER_URL || undefined}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="편지"
+        className="absolute left-[90.104%] top-[33.25%] h-[45.02%] w-[2.001%] hover:opacity-60"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="" className="absolute left-[12.5%] top-[20%] block h-[60%] w-[75%]" src={LETTER_ICON_SRC} />
+      </a>
     </>
   );
 }
@@ -180,6 +197,22 @@ function MobileMenuList({
     <button key="search" type="button" onClick={onSearch} className="hover:opacity-60">
       Search
     </button>,
+    // The header's letter icon, sized to the 14px items as the desktop one is
+    // to its 16px nav. Painted through a mask so it takes the items' color.
+    <a
+      key="letter"
+      href={LETTER_URL || undefined}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="편지"
+      // One text line tall, so it sits under Search at the same step as the items above.
+      className="flex h-[1lh] items-center hover:opacity-60"
+    >
+      <span
+        className="block h-[3.88vw] w-[4.846vw] bg-current"
+        style={{ mask: `url(${LETTER_ICON_SRC}) center / contain no-repeat` }}
+      />
+    </a>,
   ];
 
   return (
