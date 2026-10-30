@@ -85,7 +85,7 @@ export default function Footer() {
           </a>
           {"  |  "}
           <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
-            instagram .
+            IG .
           </a>
           {"  |  "}
         </p>
