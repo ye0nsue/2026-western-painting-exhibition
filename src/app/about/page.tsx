@@ -1,5 +1,4 @@
 import { Inter, Noto_Sans_KR } from "next/font/google";
-import { students } from "@/lib/exhibition";
 import { ABOUT_DESKTOP_GRID as DESKTOP_GRID, ABOUT_MOBILE_GRID as MOBILE_GRID } from "@/lib/aboutGrid";
 import PageTransition from "@/components/PageTransition";
 
@@ -16,11 +15,20 @@ const notoSansKr = Noto_Sans_KR({
 
 const POSTER_SRC = "/images/about/poster.webp";
 
-const ARTISTS = students.map((s) => (s.studentId ? `${s.name}(${s.studentId})` : s.name)).join(", ");
+// The participating artists exactly as Figma breaks them, each line but the
+// last justified to the column.
+const ARTIST_LINES = [
+  "곽신영, 구아림, 권민진, 김가영, 김서영, 김서정, 김세원,",
+  "김유진, 김은수, 김채은, 나윤서, 박세린, 박예지, 오정현,",
+  "오주한, 윤정현, 이서진, 이지윤, 이채원(20222034),",
+  "이채원(20232014), 임가은, 임세연, 장연수, 전윤하,",
+  "정민재, 정세진, 차수연, 최유진, 최하영, 하설빈, 한수연,",
+  "한채연",
+];
 
-const CREDITS: [role: string, people: string][] = [
+const CREDITS: [role: string, people: string | string[]][] = [
   ["주최", "성신여자대학교 미술대학 서양화과"],
-  ["참여작가", ARTISTS],
+  ["참여작가", ARTIST_LINES],
   ["교수진", "박영근, 조병왕, 임상빈, 김정연"],
   ["졸업전시준비 총감독", "조병왕"],
   ["졸업전시준비위원장", "임가은"],
@@ -141,13 +149,23 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Credits: 200px label column (111.3 on mobile), value up to the column's edge; rows 16px (9px) apart. */}
-          <dl className="mt-[6.137vw] flex flex-col gap-[2.32vw] text-[2.283vw] leading-[1.8] font-semibold text-black min-[695px]:mt-[1.667vw] min-[695px]:gap-[1.111vw] min-[695px]:text-[1.111vw]">
+          {/* Credits: 200px label column (111.3 on mobile), value up to the column's edge; rows 16px (9px) apart.
+              Roles are semibold, names medium and tracked -1%, as in Figma. */}
+          <dl className="mt-[6.137vw] flex flex-col gap-[2.32vw] text-[2.283vw] leading-[1.8] text-black min-[695px]:mt-[1.667vw] min-[695px]:gap-[1.111vw] min-[695px]:text-[1.111vw]">
             {CREDITS.map(([role, people]) => (
               <div key={role} className="flex">
-                <dt className="w-[28.541vw] shrink-0 p-[1.427vw] min-[695px]:w-[13.889vw] min-[695px]:p-[0.694vw]">{role}</dt>
-                <dd className="max-w-[54.933vw] p-[1.427vw] text-justify min-[695px]:max-w-[26.731vw] min-[695px]:p-[0.694vw]">
-                  {people}
+                <dt className="w-[28.541vw] shrink-0 p-[1.427vw] font-semibold min-[695px]:w-[13.889vw] min-[695px]:p-[0.694vw]">{role}</dt>
+                <dd className="min-w-0 flex-1 p-[1.427vw] font-medium tracking-[-0.01em] text-justify min-[695px]:p-[0.694vw]">
+                  {Array.isArray(people)
+                    ? people.map((line, i) => (
+                        <span
+                          key={line}
+                          className={`block whitespace-nowrap ${i < people.length - 1 ? "[text-align-last:justify]" : ""}`}
+                        >
+                          {line}
+                        </span>
+                      ))
+                    : people}
                 </dd>
               </div>
             ))}
