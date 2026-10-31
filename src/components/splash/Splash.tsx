@@ -600,8 +600,8 @@ export default function Splash({ children }: { children: ReactNode }) {
   .fpsplash .go .date { animation: fpsplash-fadein 0.8s ease-out 7.5s both; }
   @keyframes fpsplash-fadein { from { opacity: 0; } to { opacity: 1; } }
 
-  .fpsplash .enter { position: absolute; right: calc(32px * var(--k)); bottom: calc(48px * var(--k)); appearance: none; border: 0; background: none; cursor: pointer; font: 600 max(12px, calc(22px * var(--k)))/1 var(--body); color: var(--ink); letter-spacing: 0.02em; padding: 10px 6px; }
-  .fpsplash .enter span { display: inline-block; border-bottom: 1px solid currentColor; padding-bottom: 3px; }
+  .fpsplash .enter { position: absolute; right: calc(32px * var(--k) + 15px); bottom: calc(48px * var(--k)); appearance: none; border: 0; background: #fff; cursor: pointer; font: 600 max(12px, calc(22px * var(--k)))/1 var(--body); color: var(--ink); letter-spacing: 0.02em; padding: 10px 12px; }  /* Figma: 흰 박스(상하 10px · 좌우 12px) 안에 밑줄 글자 */
+  .fpsplash .enter span { display: inline-block; text-decoration: underline; text-decoration-thickness: from-font; }
   .fpsplash .go .enter { animation: fpsplash-rise 0.7s ease-out 8.1s both; }
   .fpsplash .go .enter span { animation: fpsplash-pulse 1.8s ease-in-out 8.9s infinite; }
   @keyframes fpsplash-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -610,7 +610,7 @@ export default function Splash({ children }: { children: ReactNode }) {
   .fpsplash .stage.compact .legend { left: max(16px, env(safe-area-inset-left, 0px)); bottom: 4vh; font-size: 13px; }
   .fpsplash .stage.compact .enter { right: 12px; bottom: 4vh; }
   .fpsplash .stage.mobile .legend { left: calc(50px * var(--k)); bottom: calc(37px * var(--k)); font-size: max(11.5px, calc(21.3px * var(--k))); }
-  .fpsplash .stage.mobile .enter { right: calc(38px * var(--k)); bottom: calc(235px * var(--k)); }
+  .fpsplash .stage.mobile .enter { right: calc(38px * var(--k)); bottom: calc(235px * var(--k) - 10px); }
   /* 사진·폰트 로딩을 기다리는 동안(.go 전)에는 서버 HTML의 글자가 제자리 잡기 전 모습으로 보이지 않도록 숨김 */
   .fpsplash .stage:not(.go) .photo, .fpsplash .stage:not(.go) .title, .fpsplash .stage:not(.go) .legend, .fpsplash .stage:not(.go) .date, .fpsplash .stage:not(.go) .enter { visibility: hidden; }
   .fpsplash .skip *, .fpsplash .skip { animation-duration: 0.001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
